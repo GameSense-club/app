@@ -4,6 +4,8 @@ import win32con
 import win32api
 import win32gui
 import atexit
+import threading
+import time
 
 KeyboardEvent = namedtuple('KeyboardEvent', ['event_type', 'key_code',
                                              'scan_code', 'alt_pressed',
@@ -11,9 +13,12 @@ KeyboardEvent = namedtuple('KeyboardEvent', ['event_type', 'key_code',
 
 handlers = []
 blocked = [390842024027, 64424509449, 266287972467]
+running = False
+hook_id = None
 
 def listen():
-    
+    global running, hook_id
+
     def low_level_handler(nCode, wParam, lParam):
         event = KeyboardEvent(event_types[wParam], lParam[0], lParam[1],
                               lParam[2] == 32, lParam[3])
@@ -47,15 +52,24 @@ def listen():
 
     atexit.register(ctypes.windll.user32.UnhookWindowsHookEx, hook_id)
 
-    while True:
+    running = True
+    while running:
         msg = win32gui.GetMessage(None, 0, 0)
         win32gui.TranslateMessage(ctypes.byref(msg))
         win32gui.DispatchMessage(ctypes.byref(msg))
 
-if __name__ == '__main__':
-    def print_event(event):
-        print("Event:", event)
-        print("key_code:", hex(event.key_code))
+def start():
+    global running
+    if not running:
+        listener_thread = threading.Thread(target=listen, daemon=True)
+        listener_thread.start()
 
-    # handlers.append(print_event)
-    listen()
+def stop():
+    global running
+    running = False
+    time.sleep(1)  # Give some time for the listener to stop
+
+def print_event(event):
+    print("Event:", event)
+    print("key_code:", hex(event.key_code))
+handlers.append(print_event)

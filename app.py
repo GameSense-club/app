@@ -1,6 +1,7 @@
 import webview
 import ctypes
 import sys
+import block_key
 
 # Функция для скрытия панели задач
 def taskbar(active = True):
@@ -21,7 +22,8 @@ def show_taskbar():
 
 # Проверка, что приложение запущено на Windows
 if sys.platform == 'win32':
-    taskbar(False)
+    taskbar()
+    # block_key.start()
 
 # Создаем окно с параметром fullscreen
 window = webview.create_window('My Web App', 'http://localhost:5000', fullscreen=True)
@@ -32,3 +34,4 @@ webview.start()
 # Восстанавливаем панель задач после закрытия окна
 if sys.platform == 'win32':
     taskbar()
+    block_key.stop()
