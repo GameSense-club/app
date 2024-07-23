@@ -19,7 +19,7 @@ def listen():
                               lParam[2] == 32, lParam[3])
         
         if event.key_code in blocked:
-            print("test")
+            print("Блокировка")
             return -1  # Блокировать обработку сообщения
 
         for handler in handlers:
@@ -57,5 +57,5 @@ if __name__ == '__main__':
         print("Event:", event)
         print("key_code:", hex(event.key_code))
 
-    handlers.append(print_event)
+    # handlers.append(print_event)
     listen()
