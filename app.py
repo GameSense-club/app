@@ -26,7 +26,7 @@ if sys.platform == 'win32':
     block_key.start()
 
 # Создаем окно с параметром fullscreen
-window = webview.create_window('My Web App', 'http://localhost:5000', fullscreen=True)
+window = webview.create_window('Game Sense', 'http://localhost:5000', fullscreen=False)
 
 # Запускаем окно с ограничениями
 webview.start()
