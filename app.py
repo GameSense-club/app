@@ -22,8 +22,8 @@ def show_taskbar():
 
 # Проверка, что приложение запущено на Windows
 if sys.platform == 'win32':
-    taskbar()
-    # block_key.start()
+    taskbar(active=True)
+    block_key.start()
 
 # Создаем окно с параметром fullscreen
 window = webview.create_window('My Web App', 'http://localhost:5000', fullscreen=True)
