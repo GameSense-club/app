@@ -1,7 +1,29 @@
 import webview
 import ctypes
 import sys
+import threading
+import socketio
 import block_key
+
+
+# Инициализация клиента SocketIO
+sio = socketio.Client()
+
+
+# Обработка события сворачивания
+@sio.event
+def minimize(data):
+    print('Получено событие сворачивания:', data['message'])
+    taskbar()
+    block_key.stop()
+    webview.windows[0].minimize()  # Свернуть окно
+
+# Подключение к серверу
+def connect_to_server():
+    sio.connect('http://127.0.0.1:5000')
+
+# Фоновый поток для работы WebSocket
+threading.Thread(target=connect_to_server).start()
 
 # Функция для скрытия панели задач
 def taskbar(active = True):
@@ -11,27 +33,19 @@ def taskbar(active = True):
     user32 = ctypes.WinDLL('user32')
     hwnd = user32.FindWindowW("Shell_TrayWnd", None)
     if hwnd:
-        user32.ShowWindow(hwnd, show)  # SW_HIDE = 0
+        user32.ShowWindow(hwnd, show)
 
 # Функция для отображения панели задач
 def show_taskbar():
     user32 = ctypes.WinDLL('user32')
     hwnd = user32.FindWindowW("Shell_TrayWnd", None)
     if hwnd:
-        user32.ShowWindow(hwnd, 5)  # SW_SHOW = 5
-
-# Проверка, что приложение запущено на Windows
-if sys.platform == 'win32':
-    taskbar(active=True)
-    block_key.start()
-
+        user32.ShowWindow(hwnd, 5)
+    
+taskbar(active=False)
+block_key.start()
 # Создаем окно с параметром fullscreen
-window = webview.create_window('Game Sense', 'http://localhost:5000', fullscreen=False)
+window = webview.create_window('Game Sense', 'http://127.0.0.1:5000', fullscreen=True)
 
 # Запускаем окно с ограничениями
 webview.start()
-
-# Восстанавливаем панель задач после закрытия окна
-if sys.platform == 'win32':
-    taskbar()
-    block_key.stop()
