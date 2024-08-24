@@ -74,4 +74,4 @@ def stop():
 def print_event(event):
     print("Event:", event)
     print("key_code:", hex(event.key_code))
-handlers.append(print_event)
+# handlers.append(print_event)
