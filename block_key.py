@@ -59,12 +59,14 @@ def listen():
         win32gui.DispatchMessage(ctypes.byref(msg))
 
 def start():
+    print("Блокировка клавиш запущена")
     global running
     if not running:
         listener_thread = threading.Thread(target=listen, daemon=True)
         listener_thread.start()
 
 def stop():
+    print("Блокировка клавиш остановлена")
     global running
     running = False
     time.sleep(1)  # Give some time for the listener to stop
