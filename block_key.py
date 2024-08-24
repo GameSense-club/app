@@ -34,8 +34,8 @@ def listen():
 
     event_types = {win32con.WM_KEYDOWN: 'key down',
                    win32con.WM_KEYUP: 'key up',
-                   0x104: 'key down',  # WM_SYSKEYDOWN, used for Alt key.
-                   0x105: 'key up',  # WM_SYSKEYUP, used for Alt key.
+                   0x104: 'key down',
+                   0x105: 'key up',
                    }
 
     CMPFUNC = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.POINTER(ctypes.c_void_p))
