@@ -12,8 +12,13 @@ sio = socketio.Client() # Инициализация клиента SocketIO
 @sio.event
 def minimize(data): # Обработка события сворачивания
     print('Получено событие сворачивания:', data['message'])
-    taskbar()
     webview.windows[0].minimize()  # Свернуть окно
+
+@sio.event
+def unlock(data): # Обработка события сворачивания
+    print('Получено событие:', data['message'])
+    taskbar()
+    webview.windows[0].minimize()
     # block_key.stop()
 
 def connect_to_server(): # Подключение к серверу
