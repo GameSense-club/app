@@ -5,7 +5,6 @@ import win32api
 import win32gui
 import atexit
 import threading
-import time
 
 KeyboardEvent = namedtuple('KeyboardEvent', ['event_type', 'key_code',
                                              'scan_code', 'alt_pressed',
@@ -15,6 +14,7 @@ handlers = []
 blocked = [390842024027, 64424509449, 266287972467]
 running = False
 hook_id = None
+stop_event = threading.Event()  # Событие для остановки потока
 
 def listen():
     global running, hook_id
@@ -58,6 +58,10 @@ def listen():
         win32gui.TranslateMessage(ctypes.byref(msg))
         win32gui.DispatchMessage(ctypes.byref(msg))
 
+        # Проверка события для выхода
+        if stop_event.is_set():
+            break
+
 def start():
     print("Блокировка клавиш запущена")
     global running
@@ -66,12 +70,22 @@ def start():
         listener_thread.start()
 
 def stop():
+    global running, hook_id
     print("Блокировка клавиш остановлена")
-    global running
-    running = False
-    time.sleep(1)  # Give some time for the listener to stop
+
+    if running:
+        running = False  # Остановить цикл в функции listen
+        
+        # Установить событие остановки
+        stop_event.set()
+
+        if hook_id is not None:
+            ctypes.windll.user32.UnhookWindowsHookEx(hook_id)  # Снять хук
+            hook_id = None
 
 def print_event(event):
     print("Event:", event)
     print("key_code:", hex(event.key_code))
-# handlers.append(print_event)
+
+# handlers.append(print_event)  # Раскомментируйте, если нужно использовать этот обработчик
+        
