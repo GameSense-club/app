@@ -20,13 +20,14 @@ def unlock(data): # Обработка события сворачивания
     print('Получено событие:', data['message'])
     taskbar()
     webview.windows[0].minimize()
-    # block_key.stop()
+    block_key.stop()
 
 @sio.event
-def block(data=None): # Обработка события блокировки
+def block(data): # Обработка события блокировки
     print('Получено событие:', data['message'])
     webview.windows[0].restore()  # Развернуть окно
-    # taskbar(active = False)
+    block_key.start()
+    taskbar(active = False)
 
 def connect_to_server(): # Подключение к серверу
     sio.connect('http://127.0.0.1:5000')
@@ -36,5 +37,7 @@ computer_number = number_pc.get_computer_number()
 print(f"Вы ввели номер компьютера: {computer_number}")
 threading.Thread(target=connect_to_server).start() # Фоновый поток для работы WebSocket
 client = webview.create_window('GameSense', 'http://127.0.0.1:5000', fullscreen=True)
-block()
+# block("Ручная блокировка")
+block_key.start()
+taskbar(active = False)
 webview.start()
