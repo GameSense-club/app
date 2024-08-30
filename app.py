@@ -30,5 +30,6 @@ computer_number = number_pc.get_computer_number()
 print(f"Вы ввели номер компьютера: {computer_number}")
 threading.Thread(target=connect_to_server).start() # Фоновый поток для работы WebSocket
 client = webview.create_window('GameSense', 'http://127.0.0.1:5000', fullscreen=True)
-taskbar(active = False)
+# taskbar(active = False)
+taskbar()
 webview.start()
