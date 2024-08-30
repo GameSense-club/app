@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 
 def validate_input(value):
-    # Проверка, что введенное значение содержит только цифры
-    return value.isdigit()
+    # Проверка, что введенное значение содержит только цифры или пустую строку
+    return value.isdigit() or value == ""
 
 def get_computer_number():
     def on_button_click():
@@ -14,7 +14,11 @@ def get_computer_number():
             root.quit()  # Завершаем главный цикл приложения
         else:
             messagebox.showwarning("Предупреждение", "Пожалуйста, введите номер компьютера.")
-    
+
+    def close_window():
+        root.quit()  # Корректно завершаем главный цикл приложения
+        root.destroy()  # Полностью закрываем окно
+
     def center_window(window):
         window.update_idletasks()  # Обновляем информацию о размере окна
         width = window.winfo_width()
@@ -28,7 +32,7 @@ def get_computer_number():
     root.title("Введите номер компьютера")
     root.computer_number = None  # Инициализация переменной для хранения числа
 
-    # Удаляем рамки окна
+    # Удаляем рамки окна (если необходимо)
     root.overrideredirect(True)
 
     # Создаем надпись
@@ -46,10 +50,21 @@ def get_computer_number():
     button = tk.Button(root, text="Подтвердить", command=on_button_click)
     button.pack(pady=10)
 
+    # Обработчик для закрытия окна
+    root.protocol("WM_DELETE_WINDOW", close_window)
+
     # Центрируем окно на экране
     center_window(root)
 
     # Запуск главного цикла приложения
     root.mainloop()
 
+    # После выхода из mainloop
+    root.destroy()  # Полностью закрываем окно
+
     return root.computer_number  # Возвращаем введенное число
+
+# Пример использования функции
+if __name__ == "__main__":
+    computer_number = get_computer_number()
+    print(f"Введённый номер компьютера: {computer_number}")
