@@ -1,6 +1,6 @@
 import tkinter as tk
 
-def create_popup():
+def create_popup(text):
     # Создаем основное окно
     popup = tk.Tk()
     
