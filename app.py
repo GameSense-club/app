@@ -30,13 +30,14 @@ def get_server_address():
     return ip_address
 
 def handle_command(command):
-    if command == "NOTIFICATION":
+    print(command)
+    if command.split(" ")[0] == "NOTIFICATION":
         notification.create_popup("Осталось 5 минут!")
         return "Уведомление пришло"
-    elif command == "BLOCK":
+    elif command.split(" ")[0] == "BLOCK":
         webview.windows[0].restore()
         return "Клиент заблокирован"
-    elif command == "UNLOCK":
+    elif command.split(" ")[0] == "UNLOCK" and int(command.split(" ")[1]) == number_pc:
         webview.windows[0].minimize()
         return "Окно разблокировано"
     else:
@@ -45,6 +46,7 @@ def handle_command(command):
 def run_server(host='0.0.0.0', port=65432):
     ip_address = get_server_address()
     print(f"Server will be available at {ip_address}:{port}")
+
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((host, port))
