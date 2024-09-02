@@ -13,15 +13,6 @@ os.environ['WEBVIEW2_USER_DATA_FOLDER'] = os.path.expanduser('~\\AppData\\Local\
 computer_number, server_name = number_pc.get_computer_and_server()
 print(server_name)
 
-def start_app():
-    try:
-        # Создание окна
-        webview.create_window('GameSense', f'http://88.206.10.174:100{computer_number}', fullscreen=True)
-        webview.start()
-    except Exception as e:
-        print(f"Ошибка инициализации WebView: {e}")
-        sys.exit(1)  # Завершение программы при возникновении ошибки
-
 def get_server_address():
     # Получаем имя хоста
     hostname = socket.gethostname()
@@ -29,29 +20,44 @@ def get_server_address():
     ip_address = socket.gethostbyname(hostname)
     return ip_address
 
+def start_app():
+    try:
+        block_key.start()
+        taskbar(active=False)
+        # Создание окна
+        webview.create_window('GameSense', f'http://192.168.0.113:100{computer_number}', fullscreen=True)
+        webview.start()
+    except Exception as e:
+        print(f"Ошибка инициализации WebView: {e}")
+        sys.exit(1)  # Завершение программы при возникновении ошибки
+
 def handle_command(command):
     print(command)
-    if command.split(" ")[0] == "NOTIFICATION":
+    if command.split("_")[0] == "NOTIFICATION" and command.split("_")[1] == str(computer_number):
         notification.create_popup("Осталось 5 минут!")
         return "Уведомление пришло"
-    elif command.split(" ")[0] == "BLOCK":
+    elif command.split("_")[0] == "BLOCK" and command.split("_")[1] == str(computer_number):
         webview.windows[0].restore()
+        block_key.start()
+        taskbar(active=False)
         return "Клиент заблокирован"
-    elif command.split(" ")[0] == "UNLOCK" and int(command.split(" ")[1]) == number_pc:
+    elif command.split("_")[0] == "UNLOCK" and command.split("_")[1] == str(computer_number):
+        block_key.stop()
         webview.windows[0].minimize()
-        return "Окно разблокировано"
+        taskbar()
+        return "Клиент разблокирован"
     else:
-        return "Unknown command."
+        return f"Неизвестная команда: {command}"
 
 def run_server(host='0.0.0.0', port=65432):
     ip_address = get_server_address()
-    print(f"Server will be available at {ip_address}:{port}")
+    print(f"Сервер запущен {ip_address}:{port}")
 
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((host, port))
         s.listen()
-        print(f"Server listening on {host}:{port}")
+        print(f"Сервер слушает {host}:{port}")
 
         while True:
             conn, addr = s.accept()
