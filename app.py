@@ -10,13 +10,13 @@ import time
 import os
 
 os.environ['WEBVIEW2_USER_DATA_FOLDER'] = os.path.expanduser('~\\AppData\\Local\\Temp\\WebView2')
+computer_number, server_name = number_pc.get_computer_and_server()
+print(server_name)
 
 def start_app():
     try:
-        computer_number = number_pc.get_computer_number()
-
         # Создание окна
-        webview.create_window('GameSense', f'http://192.168.0.113:100{computer_number}', fullscreen=True)
+        webview.create_window('GameSense', f'http://88.206.10.174:100{computer_number}', fullscreen=True)
         webview.start()
     except Exception as e:
         print(f"Ошибка инициализации WebView: {e}")
