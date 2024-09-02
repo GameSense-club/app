@@ -58,7 +58,7 @@ def get_computer_and_server():
     entry_server = tk.Entry(root)
     entry_server.pack(pady=10)
     # Задаем значение по умолчанию
-    entry_server.insert(0, "192.168.0.113")
+    entry_server.insert(0, "192.168.0.103")
 
     # Создаем кнопку
     button = tk.Button(root, text="Подтвердить", command=on_button_click)
