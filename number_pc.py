@@ -30,14 +30,6 @@ def get_computer_and_server():
         y = (window.winfo_screenheight() // 2) - (height // 2)
         window.geometry(f'{width}x{height}+{x}+{y}')
 
-    def paste_text(event=None):
-        # Вставка текста из буфера обмена
-        try:
-            clipboard_content = root.clipboard_get()
-            entry_server.insert(tk.END, clipboard_content)  # Вставка в поле ввода
-        except tk.TclError:
-            messagebox.showwarning("Ошибка", "Не удалось получить данные из буфера обмена.")
-
     # Создаем главное окно
     root = tk.Tk()
     root.title("Введите номер компьютера и сервер")
@@ -65,9 +57,6 @@ def get_computer_and_server():
     # Создаем поле ввода для имени сервера
     entry_server = tk.Entry(root)
     entry_server.pack(pady=10)
-
-    # Привязываем сочетание клавиш Ctrl+V к функции вставки
-    root.bind('<Control-v>', paste_text)
 
     # Создаем кнопку
     button = tk.Button(root, text="Подтвердить", command=on_button_click)
