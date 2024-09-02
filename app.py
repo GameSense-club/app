@@ -25,7 +25,7 @@ def start_app():
         block_key.start()
         taskbar(active=False)
         # Создание окна
-        webview.create_window('GameSense', f'http://192.168.0.113:100{computer_number}', fullscreen=True)
+        webview.create_window('GameSense', f'http://{server_name}:100{computer_number}', fullscreen=True)
         webview.start()
     except Exception as e:
         print(f"Ошибка инициализации WebView: {e}")
