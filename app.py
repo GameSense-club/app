@@ -73,25 +73,20 @@ def run_server(host='0.0.0.0', port=65432):
                     conn.sendall(response.encode('utf-8'))
 
 def create_image():
-    width = 64
-    height = 64
-    image = Image.new('RGB', (width, height), color=(0, 0, 0))
-    draw = ImageDraw.Draw(image)
-    draw.rectangle(
-        (width//4, height//4, width//4*3, height//4*3),
-        fill=(255, 255, 255)
-    )
+    # Загрузите изображение и преобразуйте его в формат, который pystray поддерживает
+    image = Image.open('logo.jpg')
     return image
+
+def setup_tray_icon():
+    # Создаем иконку и запускаем ее
+    icon = pystray.Icon('GameSense', create_image(), menu=pystray.Menu(
+        pystray.MenuItem('Открыть', on_open),
+    ))
+    icon.run()
 
 def on_open(icon, item):
     window.show()  # Показываем окно WebView при нажатии на 'Открыть'
     window.restore()
-
-def setup_tray_icon():
-    icon = pystray.Icon('test_icon', create_image(), menu=pystray.Menu(
-        pystray.MenuItem('Открыть', on_open),
-    ))
-    icon.run()
 
 if __name__ == "__main__":
     server_thread = threading.Thread(target=run_server)
