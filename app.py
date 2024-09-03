@@ -15,6 +15,8 @@ import atexit
 import ctypes
 from PIL import Image, ImageDraw
 import pystray
+# C:\Users\GameSense1\AppData\Roaming\Python\Python311\Scripts\auto-py-to-exe.exe
+
 
 
 # ---------------------------------------------------------------------------------------------
