@@ -6,7 +6,6 @@ import tkinter as tk
 from tkinter import messagebox
 import time
 import os
-<<<<<<< HEAD
 from collections import namedtuple
 import ctypes
 import win32con
@@ -222,18 +221,15 @@ def get_computer_and_server():
 # ---------------------------------------------------------------------------------------------
 
 
-=======
-from PIL import Image, ImageDraw
-import pystray
->>>>>>> origin/main
 
-# Устанавливаем переменные среды
 os.environ['WEBVIEW2_USER_DATA_FOLDER'] = os.path.expanduser('~\\AppData\\Local\\Temp\\WebView2')
 computer_number, server_name = get_computer_and_server()
 print(server_name)
 
 def get_server_address():
+    # Получаем имя хоста
     hostname = socket.gethostname()
+    # Получаем IP-адрес
     ip_address = socket.gethostbyname(hostname)
     return ip_address
 
@@ -254,7 +250,6 @@ def handle_command(command):
         create_popup("Осталось 5 минут!")
         return "Уведомление пришло"
     elif command.split("_")[0] == "BLOCK" and command.split("_")[1] == str(computer_number):
-<<<<<<< HEAD
         webview.windows[0].restore()
         start_block()
         taskbar(active=False)
@@ -263,17 +258,7 @@ def handle_command(command):
         stop_block()
         window.hide()
         webview.windows[0].minimize()
-=======
-        window.restore()
-        block_key.start()
-        taskbar(active=False)
-        return "Клиент заблокирован"
-    elif command.split("_")[0] == "UNLOCK" and command.split("_")[1] == str(computer_number):
-        block_key.stop()
-        window.minimize()
->>>>>>> origin/main
         taskbar()
-        window.hide()
         return "Клиент разблокирован"
     else:
         return f"Неизвестная команда: {command}"
@@ -281,6 +266,7 @@ def handle_command(command):
 def run_server(host='0.0.0.0', port=65432):
     ip_address = get_server_address()
     print(f"Сервер запущен {ip_address}:{port}")
+
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((host, port))
@@ -316,6 +302,7 @@ def on_open(icon, item):
     window.restore()
 
 if __name__ == "__main__":
+    # Создаем поток для сервера
     server_thread = threading.Thread(target=run_server)
     server_thread.daemon = True
     server_thread.start()
@@ -324,8 +311,5 @@ if __name__ == "__main__":
     tray_thread.daemon = True
     tray_thread.start()
 
-<<<<<<< HEAD
     # Запуск приложения WebView
-=======
->>>>>>> origin/main
     start_app()
