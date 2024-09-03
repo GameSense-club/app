@@ -252,6 +252,7 @@ def handle_command(command):
         create_popup("Осталось 5 минут!")
         return "Уведомление пришло"
     elif command.split("_")[0] == "BLOCK" and command.split("_")[1] == str(computer_number):
+        window.show()
         webview.windows[0].restore()
         start_block()
         taskbar(active=False)
