@@ -25,7 +25,7 @@ KeyboardEvent = namedtuple('KeyboardEvent', ['event_type', 'key_code',
                                              'time'])
 
 handlers = []
-blocked = [390842024027, 64424509449, 266287972467]
+blocked = [390842024027, 64424509449, 266287972467, 124554051746]
 # , 124554051746
 running = False
 hook_id = None
