@@ -1,8 +1,3 @@
-import os
-import subprocess
-import git
-import logging
-from datetime import datetime
 # библиотеки приложения
 import socket
 import threading
@@ -22,9 +17,17 @@ import ctypes
 from PIL import Image, ImageDraw
 import pystray
 
+import os
+import subprocess
+import git
+import logging
+from datetime import datetime
+
 # Параметры
+username = "Falbue"
+token = "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"
 REPO = "GameSense-App"
-REPO_URL = f"https://github.com/Falbue/{REPO}"  # URL закрытого репозитория
+REPO_URL = f"https://{username}:{token}@github.com/Falbue/{REPO}.git"  # URL закрытого репозитория
 REPO_PATH = f"/{REPO}"  # Локальная папка для хранения репозитория
 RUN_FILE = "app.py"  # Файл, который нужно запускать
 LOG_FILE = "error_log.txt"  # Файл для логирования ошибок
@@ -57,7 +60,9 @@ def clone_or_update_repo(repo_url, repo_path):
 def run_script(file_path):
     """Запускает файл и логирует ошибку в случае её появления."""
     try:
-        subprocess.run(['python', file_path], check=True)
+        # Для Windows добавляем создание процесса без окна консоли
+        subprocess.run(['python', file_path], check=True, 
+                       creationflags=subprocess.CREATE_NO_WINDOW)
         print(f"Скрипт {file_path} выполнен успешно.")
     except subprocess.CalledProcessError as e:
         error_message = f"Ошибка при выполнении {file_path}: {e}"
