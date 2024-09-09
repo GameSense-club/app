@@ -18,51 +18,48 @@ from PIL import Image, ImageDraw
 import pystray
 
 import os
-import subprocess
-import git
+import requests
 import logging
-from datetime import datetime
+from github import Github
+from zipfile import ZipFile
+import io
+import subprocess
 
 # Параметры
 username = "Falbue"
 token = "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"
 REPO = "GameSense-App"
-REPO_URL = f"https://{username}:{token}@github.com/Falbue/{REPO}.git"  # URL закрытого репозитория
+REPO_URL = f"https://{username}:{token}@github.com/{username}/{REPO}"
 REPO_PATH = f"/{REPO}"  # Локальная папка для хранения репозитория
 RUN_FILE = "app.py"  # Файл, который нужно запускать
 LOG_FILE = "error_log.txt"  # Файл для логирования ошибок
 
 # Настройка логирования
-logging.basicConfig(filename=LOG_FILE, level=logging.ERROR, 
-                    format='%(asctime)s - %(message)s')
+logging.basicConfig(filename=LOG_FILE, level=logging.ERROR, format='%(asctime)s - %(message)s')
 
-def clone_or_update_repo(repo_url, repo_path):
-    """Клонирует или обновляет репозиторий."""
+def download_repo_as_zip(repo_url, repo_path):
+    """Скачивает репозиторий как zip и распаковывает его."""
     if not os.path.exists(repo_path):
         try:
-            # Клонирование репозитория
-            git.Repo.clone_from(repo_url, repo_path)
-            print(f"Репозиторий склонирован в {repo_path}")
+            # Запрос на скачивание архива репозитория
+            response = requests.get(f"{repo_url}/archive/refs/heads/main.zip", stream=True)
+            if response.status_code == 200:
+                # Распаковка архива
+                with ZipFile(io.BytesIO(response.content)) as zip_ref:
+                    zip_ref.extractall(repo_path)
+                print(f"Репозиторий скачан и распакован в {repo_path}")
+            else:
+                logging.error(f"Ошибка при скачивании репозитория: {response.status_code}")
+                return False
         except Exception as e:
-            logging.error(f"Ошибка при клонировании репозитория: {e}")
-            return False
-    else:
-        try:
-            # Обновление репозитория
-            repo = git.Repo(repo_path)
-            repo.remotes.origin.pull()
-            print(f"Репозиторий обновлен в {repo_path}")
-        except Exception as e:
-            logging.error(f"Ошибка при обновлении репозитория: {e}")
+            logging.error(f"Ошибка при скачивании репозитория: {e}")
             return False
     return True
 
 def run_script(file_path):
     """Запускает файл и логирует ошибку в случае её появления."""
     try:
-        # Для Windows добавляем создание процесса без окна консоли
-        subprocess.run(['python', file_path], check=True, 
-                       creationflags=subprocess.CREATE_NO_WINDOW)
+        subprocess.run(['python', file_path], check=True)
         print(f"Скрипт {file_path} выполнен успешно.")
     except subprocess.CalledProcessError as e:
         error_message = f"Ошибка при выполнении {file_path}: {e}"
@@ -70,10 +67,10 @@ def run_script(file_path):
         print(error_message)
 
 def main():
-    # Проверяем и обновляем репозиторий
-    if clone_or_update_repo(REPO_URL, REPO_PATH):
+    # Проверяем и скачиваем репозиторий как zip
+    if download_repo_as_zip(REPO_URL, REPO_PATH):
         # Путь к запускаемому файлу
-        file_to_run = os.path.join(REPO_PATH, RUN_FILE)
+        file_to_run = os.path.join(REPO_PATH, REPO, "main", RUN_FILE)
         # Запуск скрипта
         run_script(file_to_run)
 
