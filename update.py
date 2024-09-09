@@ -1,5 +1,4 @@
 import requests
-import base64
 import os
 
 # Конфигурация
@@ -22,35 +21,33 @@ def get_contents(path=""):
         print(f"Ошибка при получении содержимого: {response.status_code}")
         return None
 
-# Скачивание файла
-def download_file(file_info):
-    # Декодирование содержимого файла из base64
-    content = base64.b64decode(file_info['content']).decode('utf-8')
-    
-    # Определение локального пути для сохранения файла
-    local_path = os.path.join(LOCAL_DIR, file_info['name'])
-    
-    # Сохранение файла на локальный диск
-    with open(local_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-    print(f"Файл {file_info['name']} успешно скачан и сохранён как {local_path}")
-
-# Обработка содержимого директории
-def process_contents(contents):
+# Скачивание всех файлов по ссылке
+def download_files(contents):
     for item in contents:
         if item['type'] == 'file':
-            download_file(item)
+            download_file(item['download_url'], item['name'])
         elif item['type'] == 'dir':
             # Если элемент - директория, рекурсивно получить содержимое
             sub_contents = get_contents(item['path'])
             if sub_contents:
-                process_contents(sub_contents)
+                download_files(sub_contents)
+
+# Скачивание файла по raw-ссылке
+def download_file(file_url, file_name):
+    local_path = os.path.join(LOCAL_DIR, file_name)
+    response = requests.get(file_url)
+    if response.status_code == 200:
+        with open(local_path, 'wb') as f:  # Сохраняем в бинарном режиме
+            f.write(response.content)
+        print(f"Файл {file_name} успешно скачан и сохранён как {local_path}")
+    else:
+        print(f"Ошибка при скачивании {file_name}: {response.status_code}")
 
 # Основная логика
 def main():
     contents = get_contents()
     if contents:
-        process_contents(contents)
+        download_files(contents)
 
 if __name__ == "__main__":
     main()
