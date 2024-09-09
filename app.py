@@ -269,8 +269,8 @@ def get_server_address():
 def start_app():
     global window
     try:
-        # start_block()
-        # taskbar(active=False)
+        start_block()
+        taskbar(active=False)
         window = webview.create_window('GameSense', f'http://{server_name}:100{computer_number}', fullscreen=True)
         webview.start()
     except Exception as e:
