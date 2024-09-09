@@ -3,6 +3,24 @@ import subprocess
 import git
 import logging
 from datetime import datetime
+# библиотеки приложения
+import socket
+import threading
+import webview
+import sys
+import tkinter as tk
+from tkinter import messagebox
+import time
+import os
+from collections import namedtuple
+import ctypes
+import win32con
+import win32api
+import win32gui
+import atexit
+import ctypes
+from PIL import Image, ImageDraw
+import pystray
 
 # Параметры
 REPO = "GameSense-App"
