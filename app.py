@@ -334,6 +334,7 @@ def setup_tray_icon():
 def on_open(icon, item):
     window.show()  # Показываем окно WebView при нажатии на 'Открыть'
     window.restore()
+    start_block()
 
 if __name__ == "__main__":
     # Создаем поток для сервера
