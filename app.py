@@ -172,6 +172,38 @@ def get_computer_and_server():
         y = (window.winfo_screenheight() // 2) - (height // 2)
         window.geometry(f'{width}x{height}+{x}+{y}')
 
+    # Функция для поиска Flask сервера
+    def find_flask_server():
+        print("Поиск запущен")
+        for i in range(100, 201):  # Диапазон от 192.168.0.100 до 192.168.0.200
+            ip = f"192.168.0.{i}"
+            port = 1001  # Порт по умолчанию для Flask
+    
+            # Пытаемся подключиться к IP и порту
+            try:
+                with socket.create_connection((ip, port), timeout=1):
+                    # Если соединение удалось, обновляем поле ввода
+                    update_status(f"Сервер найден")
+                    entry_server.delete(0, tk.END)
+                    entry_server.insert(0, ip)
+                    return
+            except (socket.timeout, ConnectionRefusedError):
+                # Сервер не найден, продолжаем поиск
+                continue
+        # Если не удалось найти сервер
+        update_status("Сервер не найден")
+
+    # Функция для обновления статуса на экране
+    def update_status(status):
+        label_status.config(text=status)
+    
+    # Функция для запуска потока поиска сервера
+    def start_search():
+        update_status("Поиск сервера...")
+        # Запуск поиска сервера в отдельном потоке
+        search_thread = threading.Thread(target=find_flask_server)
+        search_thread.start()
+    
     # Создаем главное окно
     root = tk.Tk()
     root.title("Введите номер компьютера и сервер")
@@ -191,16 +223,14 @@ def get_computer_and_server():
     # Создаем поле ввода для номера компьютера
     entry_computer = tk.Entry(root, validate='key', validatecommand=vcmd)
     entry_computer.pack(pady=10)
-
-    # Создаем надпись для сервера
-    label_server = tk.Label(root, text="Введите имя сервера:")
-    label_server.pack(pady=10)
-
-    # Создаем поле ввода для имени сервера
+    
+    # Надпись для статуса
+    label_status = tk.Label(root, text="Ожидание...")
+    label_status.pack(pady=10)
+    
+    # Поле ввода для имени сервера
     entry_server = tk.Entry(root)
     entry_server.pack(pady=10)
-    # Задаем значение по умолчанию
-    entry_server.insert(0, "192.168.0.103")
 
     # Создаем кнопку
     button = tk.Button(root, text="Подтвердить", command=on_button_click)
@@ -213,6 +243,7 @@ def get_computer_and_server():
     center_window(root)
 
     # Запуск главного цикла приложения
+    root.after(100, start_search)  # Запускаем поиск через 100 мс после старта GUI
     root.mainloop()
 
     # После выхода из mainloop
@@ -238,8 +269,8 @@ def get_server_address():
 def start_app():
     global window
     try:
-        start_block()
-        taskbar(active=False)
+        # start_block()
+        # taskbar(active=False)
         window = webview.create_window('GameSense', f'http://{server_name}:100{computer_number}', fullscreen=True)
         webview.start()
     except Exception as e:
