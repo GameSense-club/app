@@ -285,7 +285,6 @@ def handle_command(command):
     elif command.split("_")[0] == "BLOCK" and command.split("_")[1] == str(computer_number):
         window.show()
         webview.windows[0].restore()
-        window.showFullScreen()
         start_block()
         taskbar(active=False)
         return "Клиент заблокирован"
