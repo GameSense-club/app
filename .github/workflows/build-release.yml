@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'setup.py'
-      - 'game/**'
-      - 'requirements.txt'
-    workflow_dispatch: 
 
 jobs:
   get_version:
