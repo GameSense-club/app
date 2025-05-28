@@ -16,7 +16,7 @@ msi_options = {
 
 setup(
     name="GameSense",
-    version="1.0.0",
+    version="1.0.0.2",
     description="Приложение для клуба",
     author="falbue",
     author_email="cyansair05@gmail.com",
