@@ -5,6 +5,7 @@ import requests
 url = "https://api.game-sense.net/pc/register"
 headers = {"Content-Type": "application/json", "x-api-key": "pc_keys"}
 
+
 def create_token(file_path='token.txt'):
     if not os.path.exists(file_path):
         token = secrets.token_hex(16)
