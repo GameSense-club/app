@@ -6,6 +6,8 @@ import block_keyboard
 from token_utils import *
 
 token = create_token()
+url = "https://api.game-sense.net/pc"
+data = {"token":token}
 
 window = None  # Объявляем window глобально
 
@@ -22,16 +24,14 @@ def send_post():
     while True:
         response = requests.post(url, json=data, headers=headers)
         response_data = response.json()
-        # print(response_data["status"])
         
-        if response_data["status"] == 'Активен':
+        if response_data["status"] == 'Занят':
             if window is not None:
                 window.hide()
                 block_keyboard.stop_block()
         else:
             if window is not None:
                 window.show()
-                webview.windows[0].restore()
                 block_keyboard.start_block()
         
         import time
