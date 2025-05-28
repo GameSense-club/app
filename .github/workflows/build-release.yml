@@ -1,4 +1,4 @@
-name: Build and Release GameSense
+name: Создание приложения
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
       - 'setup.py'
       - 'game/**'
       - 'requirements.txt'
+    workflow_dispatch: 
 
 jobs:
   get_version:
