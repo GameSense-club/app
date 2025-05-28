@@ -6,22 +6,22 @@ on:
       - main
 
 jobs:
-  Получение версии:
+  get_version:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.Получение версии.outputs.version }}
+      version: ${{ steps.get_version.outputs.version }}
     steps:
       - name: Получить исходный код
         uses: actions/checkout@v4
 
       - name: Извлечь версию из setup.py
-        id: Получение версии
+        id: get_version
         run: |
           VERSION=$(grep "version=" setup.py | cut -d '"' -f 2)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
   build:
-    needs: Получение версии
+    needs: get_version
     runs-on: windows-latest
     steps:
       - name: Получить исходный код
@@ -46,7 +46,7 @@ jobs:
       - name: Определить версию
         id: vars
         run: |
-          echo "version=${{ needs.Получение версии.outputs.version }}" >> $GITHUB_ENV
+          echo "version=${{ needs.get_version.outputs.version }}" >> $GITHUB_ENV
 
       - name: Добавить тег к коммиту с версией
         env:
