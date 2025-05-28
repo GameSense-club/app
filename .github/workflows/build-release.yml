@@ -11,10 +11,10 @@ jobs:
     outputs:
       version: ${{ steps.get_version.outputs.version }}
     steps:
-      - name: Checkout code
+      - name: Получить исходный код
         uses: actions/checkout@v4
 
-      - name: Extract version from setup.py
+      - name: Извлечь версию из setup.py
         id: get_version
         run: |
           VERSION=$(grep "version=" setup.py | cut -d '"' -f 2)
@@ -24,30 +24,30 @@ jobs:
     needs: get_version
     runs-on: windows-latest
     steps:
-      - name: Checkout code
+      - name: Получить исходный код
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Настроить Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
-      - name: Install dependencies
+      - name: Установить зависимости
         run: |
           pip install --upgrade pip
           pip install cx-Freeze
           pip install -r requirements.txt
 
-      - name: Build MSI installer
+      - name: Собрать установщик MSI
         run: |
           python setup.py bdist_msi
 
-      - name: Determine version
+      - name: Определить версию
         id: vars
         run: |
           echo "version=${{ needs.get_version.outputs.version }}" >> $GITHUB_ENV
 
-      - name: Tag commit with version
+      - name: Добавить тег к коммиту с версией
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -56,7 +56,7 @@ jobs:
           git tag v${{ env.version }}
           git push origin v${{ env.version }}
 
-      - name: Upload artifact
+      - name: Загрузить артефакт
         uses: actions/upload-artifact@v4
         with:
           name: GameSense-installer
@@ -68,26 +68,26 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
 
     steps:
-      - name: Download artifact
+      - name: Скачать артефакт
         uses: actions/download-artifact@v4
         with:
           name: GameSense-installer
           path: dist
 
-      - name: Get version from tag
+      - name: Получить версию из тега
         id: get_tag
         run: |
           TAG=${{ github.ref }}
           VERSION=${TAG#refs/tags/v}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Create Release and Upload Asset
+      - name: Создать релиз и загрузить артефакт
         uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref }}
-          name: Release ${{ steps.get_tag.outputs.version }}
+          name: Релиз ${{ steps.get_tag.outputs.version }}
           draft: false
           prerelease: false
           artifacts: dist/GameSense-${{ steps.get_tag.outputs.version }}.msi
