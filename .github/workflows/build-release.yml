@@ -3,10 +3,10 @@ name: Build and Release GameSense
 on:
   push:
     branches:
-      - main # или master, в зависимости от вашего проекта
+      - main
     paths:
       - 'setup.py'
-      - 'game/**' # пример пути с кодом
+      - 'game/**'
       - 'requirements.txt'
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
       version: ${{ steps.get_version.outputs.version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Extract version from setup.py
         id: get_version
@@ -29,10 +29,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
@@ -61,7 +61,7 @@ jobs:
           git push origin v${{ env.version }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: GameSense-installer
           path: dist/
@@ -73,9 +73,9 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v2
         with:
-          name: GameSense-installer
+          name: GameSense-instifier
           path: dist
 
       - name: Get version from tag
