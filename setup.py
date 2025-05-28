@@ -1,107 +1,37 @@
-name: Build and Release GameSense
+from cx_Freeze import setup, Executable
+import sys
 
-on:
-  push:
-    branches:
-      - main # или master, в зависимости от вашего проекта
-    paths:
-      - 'setup.py'
-      - 'game/**' # пример пути с кодом
-      - 'requirements.txt'
+base = "Win32GUI" if sys.platform == "win32" else None
+icon_file = "logo.ico"
 
-jobs:
-  get_version:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+build_exe_options = {
+    "include_files": [icon_file],
+}
 
-      - name: Extract version from setup.py
-        id: get_version
-        run: |
-          VERSION=$(grep "version=" setup.py | cut -d '"' -f 2)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+msi_options = {
+    "upgrade_code": "{F7A2E5C3-9D4E-4A8C-9B8D-7A1234567890}",
+    "add_to_path": False,
+    "initial_target_dir": r"[ProgramFilesFolder]\GameSense",
+}
 
-  build:
-    needs: get_version
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install cx-Freeze
-          pip install -r requirements.txt
-
-      - name: Build MSI installer
-        run: |
-          python setup.py bdist_msi
-
-      - name: Determine version
-        id: vars
-        run: |
-          echo "version=${{ needs.get_version.outputs.version }}" >> $GITHUB_ENV
-
-      - name: Tag commit with version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --local user.email "github-actions@example.com"
-          git config --local user.name "GitHub Actions"
-          git tag v${{ env.version }}
-          git push origin v${{ env.version }}
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: GameSense-installer
-          path: dist/
-
-  release:
-    needs: [build]
-    runs-on: windows-latest
-    if: startsWith(github.ref, 'refs/tags/v')
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: GameSense-installer
-          path: dist
-
-      - name: Get version from tag
-        id: get_tag
-        run: |
-          TAG=${{ github.ref }}
-          VERSION=${TAG#refs/tags/v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ steps.get_tag.outputs.version }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/GameSense-${{ steps.get_tag.outputs.version }}.msi
-          asset_name: GameSense-Installer-${{ steps.get_tag.outputs.version }}.msi
-          asset_content_type: application/octet-stream
+setup(
+    name="GameSense",
+    version="1.0.0",
+    description="Приложение для клуба",
+    author="falbue",
+    author_email="cyansair05@gmail.com",
+    options={
+        "build_exe": build_exe_options,
+        "bdist_msi": msi_options,
+    },
+    executables=[
+        Executable(
+            script="app.py",
+            base=base,
+            icon=icon_file,
+            target_name="GameSense.exe",
+            shortcut_name="GameSense",
+            shortcut_dir="DesktopFolder",
+        )
+    ],
+)

@@ -40,7 +40,6 @@ jobs:
 
       - name: Собрать установщик MSI
         run: |
-          cat setup.py
           python setup.py bdist_msi
 
       - name: Определить версию
