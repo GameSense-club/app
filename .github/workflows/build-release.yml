@@ -57,7 +57,7 @@ jobs:
           git push origin v${{ env.version }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: GameSense-installer
           path: dist/
@@ -69,9 +69,9 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: GameSense-instifier
+          name: GameSense-installer
           path: dist
 
       - name: Get version from tag
@@ -83,21 +83,43 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: octokit/graphql-action@v2.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ steps.get_tag.outputs.version }}
-          draft: false
-          prerelease: false
+          script: |
+            const tagName = process.env.GITHUB_REF.replace('refs/tags/', '');
+            const releaseName = `Release ${tagName}`;
+            const mutation = `
+              mutation($repoOwner: String!, $repoName: String!, $tagName: String!) {
+                createRelease(input: {
+                  repositoryId: (repository(owner: $repoOwner, name: $repoName)) {id},
+                  name: $releaseName,
+                  tagName: $tagName,
+                  draft: false,
+                  prerelease: false
+                }) {
+                  release {
+                    uploadUrl
+                  }
+                }
+              }
+            `;
+            const variables = {
+              repoOwner: context.repo.owner,
+              repoName: context.repo.repo,
+              tagName: tagName,
+              releaseName: releaseName
+            };
+            console.log(`::set-output name=query::${mutation}`);
+            console.log(`::set-output name=variables::${JSON.stringify(variables)}`);
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.uploadUrl }}
           asset_path: dist/GameSense-${{ steps.get_tag.outputs.version }}.msi
           asset_name: GameSense-Installer-${{ steps.get_tag.outputs.version }}.msi
           asset_content_type: application/octet-stream
