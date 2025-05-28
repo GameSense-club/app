@@ -12,7 +12,7 @@ jobs:
       version: ${{ steps.get_version.outputs.version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Extract version from setup.py
         id: get_version
@@ -25,7 +25,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -57,7 +57,7 @@ jobs:
           git push origin v${{ env.version }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: GameSense-installer
           path: dist/
@@ -69,7 +69,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: GameSense-installer
           path: dist
@@ -81,45 +81,14 @@ jobs:
           VERSION=${TAG#refs/tags/v}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        id: create_release
-        uses: octokit/graphql-action@v2.1.0
+      - name: Create Release and Upload Asset
+        uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          script: |
-            const tagName = process.env.GITHUB_REF.replace('refs/tags/', '');
-            const releaseName = `Release ${tagName}`;
-            const mutation = `
-              mutation($repoOwner: String!, $repoName: String!, $tagName: String!) {
-                createRelease(input: {
-                  repositoryId: (repository(owner: $repoOwner, name: $repoName)) {id},
-                  name: $releaseName,
-                  tagName: $tagName,
-                  draft: false,
-                  prerelease: false
-                }) {
-                  release {
-                    uploadUrl
-                  }
-                }
-              }
-            `;
-            const variables = {
-              repoOwner: context.repo.owner,
-              repoName: context.repo.repo,
-              tagName: tagName,
-              releaseName: releaseName
-            };
-            console.log(`::set-output name=query::${mutation}`);
-            console.log(`::set-output name=variables::${JSON.stringify(variables)}`);
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.uploadUrl }}
-          asset_path: dist/GameSense-${{ steps.get_tag.outputs.version }}.msi
-          asset_name: GameSense-Installer-${{ steps.get_tag.outputs.version }}.msi
-          asset_content_type: application/octet-stream
+          tagName: ${{ github.ref }}
+          name: Release ${{ steps.get_tag.outputs.version }}
+          draft: false
+          prerelease: false
+          artifacts: dist/GameSense-${{ steps.get_tag.outputs.version }}.msi
+          assetNames: GameSense-Installer-${{ steps.get_tag.outputs.version }}.msi
