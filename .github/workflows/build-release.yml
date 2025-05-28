@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  deployments: write
+  id-token: write
+
 jobs:
   get_version:
     runs-on: ubuntu-latest
@@ -49,7 +54,7 @@ jobs:
 
       - name: Добавить тег к коммиту с версией
         env:
-          GITHUB_TOKEN: ${{ secrets.CI_DEPLOY_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --local user.email "github-actions@example.com"
           git config --local user.name "GitHub Actions"
@@ -84,7 +89,7 @@ jobs:
       - name: Создать релиз и загрузить артефакт
         uses: ncipollo/release-action@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.CI_DEPLOY_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref }}
           name: Релиз ${{ steps.get_tag.outputs.version }}
