@@ -1,6 +1,8 @@
 from cx_Freeze import setup, Executable
 import sys
 
+version="1.0.0"
+
 base = "Win32GUI" if sys.platform == "win32" else None
 icon_file = "logo.ico"
 
@@ -16,7 +18,7 @@ msi_options = {
 
 setup(
     name="GameSense",
-    version="1.0.0.2",
+    version=version,
     description="Приложение для клуба",
     author="falbue",
     author_email="cyansair05@gmail.com",
