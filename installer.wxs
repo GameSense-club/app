@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product Id="*"
+             Name="GameSense"
+             Language="1033"
+             Version="1.0.0.0"
+             Manufacturer="falbue"
+             UpgradeCode="{F7A2E5C3-9D4E-4A8C-9B8D-7A1234567890}">
+
+        <Package InstallerVersion="500"
+                 Compressed="yes"
+                 InstallScope="perMachine"
+                 Platform="x64"/>
+
+        <MajorUpgrade DowngradeErrorMessage="Новая версия уже установлена." />
+        <MediaTemplate />
+
+        <Feature Id="ProductFeature" Level="1">
+            <ComponentGroupRef Id="BinaryFiles" />
+        </Feature>
+    </Product>
+</Wix>
