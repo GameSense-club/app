@@ -1,15 +1,19 @@
 import os
 import jwt
 import requests
+import secrets
+import string
 
-
+def generate_random_token(length=32):
+    characters = string.ascii_letters + string.digits + '-_'
+    return ''.join(secrets.choice(characters) for _ in range(length))
 
 
 def create_token(file_path='token.txt'):
     if not os.path.exists(file_path):
         token = jwt.encode({
             'user_id': 'computer',
-            'email': 'gamesense.ghost@gmail.com',
+            'email': generate_random_token(),
             'role': 'developer'
         }, "GhonseMaskot", algorithm="HS256")
     
