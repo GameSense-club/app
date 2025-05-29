@@ -10,6 +10,13 @@ import add_autostart
 
 add_autostart.add_to_autostart()
 
+APPDATA_DIR = os.getenv('LOCALAPPDATA')
+DIR = os.path.join(APPDATA_DIR, "GameSense")
+LOG_FILE = os.path.join(DIR, "app.log")
+
+# Создаем папку, если её нет
+os.makedirs(DIR, exist_ok=True)
+
 def edit_status():
     url = "https://api.game-sense.net/pc/status"
     data = {"token":token, "status":"активен"}
@@ -17,7 +24,7 @@ def edit_status():
 
 # Настройка логирования
 logging.basicConfig(
-    filename='app.log',
+    filename=LOG_FILE,
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
