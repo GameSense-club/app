@@ -22,12 +22,24 @@ jobs:
       - name: Извлечь версию из setup.py через Python
         id: get_version
         run: |
-          VERSION=$(python -c "import setuptools; dist = setuptools.setup(); print(dist.get_version())" 2>/dev/null | tr -d '\r')
+          VERSION=$(python -c "
+            from cx_Freeze import setup
+            import sys
+
+            def fake_setup(*args, **kwargs):
+              print(kwargs['version'])
+              return None
+
+            sys.modules['cx_Freeze'].setup = fake_setup
+            import runpy
+            runpy.run_path('setup.py')
+          " 2>/dev/null | tr -d '\r' | xargs)
+
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Показать версию
+      - name: Отладка: Показать версию
         run: |
-          echo "Версия: '${{ needs.get_version.outputs.version }}'"
+          echo "Извлечённая версия: '${{ steps.get_version.outputs.version }}'"
 
   # build:
   #   needs: get_version
