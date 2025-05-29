@@ -1,7 +1,7 @@
 from cx_Freeze import setup, Executable
 import sys
 
-version="1.0.1.4"
+version = "1.0.1.4.1"
 
 base = "Win32GUI" if sys.platform == "win32" else None
 icon_file = "logo.ico"
@@ -15,12 +15,12 @@ msi_options = {
     "add_to_path": False,
     "initial_target_dir": r"[ProgramFilesFolder]\GameSense",
     "data": {
-        # Добавляем запись в реестр для автозагрузки
         "Registry": [
             (
-                r"Software\Microsoft\Windows\CurrentVersion\Run",
+                r"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run",
                 "GameSense",  # Имя записи
-                r"[InstallPath]GameSense.exe"
+                r"[InstallPath]GameSense.exe",
+                1  # 1 = REG_SZ (строковый тип)
             )
         ]
     }
