@@ -37,7 +37,7 @@ jobs:
 
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Отладка: Показать версию
+      - name: Показать версию
         run: |
           echo "Извлечённая версия: '${{ steps.get_version.outputs.version }}'"
 
