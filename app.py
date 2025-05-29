@@ -31,7 +31,7 @@ def start_app():
     global window
     try:
         logging.info("Инициализация WebView")
-        window = webview.create_window('GameSense', 'https://game-sense.net ', fullscreen=True)
+        window = webview.create_window('GameSense', f'https://game-sense.net/login_pc/{token}', fullscreen=True)
         webview.start()
     except Exception as e:
         logging.error(f"Ошибка инициализации WebView: {e}", exc_info=True)
