@@ -11,7 +11,7 @@ import add_autostart
 add_autostart.add_to_autostart()
 
 APPDATA_DIR = os.getenv('LOCALAPPDATA')
-DIR = os.path.join(APPDATA_DIR, "GameSense")
+DIR = os.path.join(APPDATA_DIR, "Programs", "GameSense")
 LOG_FILE = os.path.join(DIR, "app.log")
 
 # Создаем папку, если её нет
