@@ -43,6 +43,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install cx-Freeze
+          pip install -r requirements.txt
 
       - name: Собрать установщик MSI
         run: |
