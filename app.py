@@ -1,11 +1,16 @@
 import webview
 import sys
-import requests
 import threading
 import block_keyboard
 from token_utils import *
 import logging
 import atexit
+from datetime import datetime, timedelta
+
+def edit_status():
+    url = "https://api.game-sense.net/pc/status"
+    data = {"token":token, "status":"активен"}
+    response = requests.post(url, json=data, headers=headers, timeout=5)
 
 # Настройка логирования
 logging.basicConfig(
@@ -15,9 +20,7 @@ logging.basicConfig(
 )
 
 token = create_token()
-url = "https://api.game-sense.net/pc"
-headers = {"Content-Type": "application/json", "x-api-key":"pc_keys"}
-data = {"token": token}
+headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}
 
 window = None  # Объявляем window глобально
 
@@ -33,13 +36,29 @@ def start_app():
         sys.exit(1)
 
 def send_post():
+    import requests
     while True:
         try:
-            response = requests.post(url, json=data, headers=headers, timeout=5)
+            url = "https://api.game-sense.net/pc"
+            response = requests.get(url, headers=headers, timeout=5)
             response.raise_for_status()  # Проверка HTTP-ошибок
             response_data = response.json()
 
-            if response_data["status"] == 'Занят':
+            if response_data["status"] == 'занят':
+                time = response_data["time_active"]
+                
+                if time:
+                    time_active = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+                    time_active += timedelta(hours=5)
+                    print(time_active)
+                    now_time = datetime.now()
+
+                    if now_time > time_active:
+                        edit_status()
+                else:
+                    edit_status()
+                    
+
                 if window is not None:
                     window.hide()
                     block_keyboard.stop_block()
@@ -48,6 +67,7 @@ def send_post():
                     window.show()
                     block_keyboard.start_block()
 
+
         except requests.exceptions.RequestException as e:
             logging.error(f"Ошибка сети: {e}", exc_info=True)
             print(f"Ошибка сети: {e}")
@@ -55,7 +75,7 @@ def send_post():
             logging.error("Неверный формат ответа от сервера (отсутствует 'status')")
         except Exception as e:
             logging.error(f"Неизвестная ошибка: {e}", exc_info=True)
-        
+
         import time
         time.sleep(1)
 
