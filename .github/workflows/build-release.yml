@@ -31,6 +31,8 @@ jobs:
   build:
     needs: get_version
     runs-on: windows-latest
+    outputs:
+      tag: ${{ steps.create_tag.outputs.tag }} # Передача тега в другие job
     steps:
       - name: Получить исходный код
         uses: actions/checkout@v4
@@ -59,13 +61,16 @@ jobs:
           echo "version=${{ needs.get_version.outputs.version }}" >> $GITHUB_ENV
 
       - name: Добавить тег к коммиту с версией
+        id: create_tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --local user.email "github-actions@example.com"
           git config --local user.name "GitHub Actions"
-          git tag "v${{ needs.get_version.outputs.version }}"
-          git push origin "v${{ needs.get_version.outputs.version }}"
+          $TAG = "v${{ needs.get_version.outputs.version }}"
+          git tag "$TAG"
+          git push origin "$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT # Сохранение тега для других job
 
       - name: Загрузить артефакт
         uses: actions/upload-artifact@v4
@@ -76,7 +81,6 @@ jobs:
   release:
     needs: [build]
     runs-on: windows-latest
-
     steps:
       - name: Скачать артефакт
         uses: actions/download-artifact@v4
@@ -87,16 +91,14 @@ jobs:
       - name: Получить версию из тега
         id: get_tag
         run: |
-          $TAG = "${{ github.ref }}"
-          $VERSION = $TAG -replace 'refs/tags/', ''
+          $TAG = "${{ needs.build.outputs.tag }}"
+          $VERSION = $TAG -replace 'v', '' # Убрать 'v' для отображения версии
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Создать релиз и загрузить артефакт
         uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: ${{ steps.get_tag.outputs.version }}
+          tag: ${{ needs.build.outputs.tag }} # Используем переданный тег
           name: Релиз ${{ steps.get_tag.outputs.version }}
           draft: false
           prerelease: false
