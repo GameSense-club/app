@@ -64,8 +64,8 @@ jobs:
         run: |
           git config --local user.email "github-actions@example.com"
           git config --local user.name "GitHub Actions"
-          git tag "v${{ env.version }}"
-          git push origin "v${{ env.version }}"
+          git tag "v${{ needs.get_version.outputs.version }}"
+          git push origin "v${{ needs.get_version.outputs.version }}"
 
       - name: Загрузить артефакт
         uses: actions/upload-artifact@v4
