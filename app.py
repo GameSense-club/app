@@ -15,7 +15,7 @@ logging.basicConfig(
 )
 
 token = create_token()
-url = "https://api.game-sense.net/pc "
+url = "https://api.game-sense.net/pc"
 headers = {"Content-Type": "application/json"}
 data = {"token": token}
 
