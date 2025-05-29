@@ -85,21 +85,20 @@ jobs:
           path: dist
 
       - name: Получить версию из тега
-        id: get_tag
-        run: |
-          $TAG = "${{ github.ref }}"
-          $VERSION = $TAG -replace 'refs/tags/v', ''
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          id: get_tag
+          run: |
+            $TAG = "${{ github.ref }}"
+            $VERSION = $TAG -replace 'refs/tags/', ''
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Создать релиз и загрузить артефакт
         uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: ${{ github.ref }}
+          tag: ${{ steps.get_tag.outputs.version }}
           name: Релиз ${{ steps.get_tag.outputs.version }}
           draft: false
           prerelease: false
           artifacts: dist/GameSense-${{ steps.get_tag.outputs.version }}.msi
-          artifactNames: GameSense-Installer-${{ steps.get_tag.outputs.version }}.msi
           token: ${{ secrets.GITHUB_TOKEN }}
