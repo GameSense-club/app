@@ -24,7 +24,8 @@ jobs:
         run: |
           VERSION=$(python -c "import setuptools; dist = setuptools.setup(); print(dist.get_version())" 2>/dev/null | tr -d '\r')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-      - name: Отладка: Показать версию
+
+      - name: Показать версию
         run: |
           echo "Версия: '${{ needs.get_version.outputs.version }}'"
 
