@@ -85,11 +85,11 @@ jobs:
           path: dist
 
       - name: Получить версию из тега
-          id: get_tag
-          run: |
-            $TAG = "${{ github.ref }}"
-            $VERSION = $TAG -replace 'refs/tags/', ''
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
+        id: get_tag
+        run: |
+          $TAG = "${{ github.ref }}"
+          $VERSION = $TAG -replace 'refs/tags/', ''
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Создать релиз и загрузить артефакт
         uses: ncipollo/release-action@v1
