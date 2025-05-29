@@ -9,8 +9,7 @@ permissions:
   contents: write
   deployments: write
   id-token: write
-  releases: write
-  
+
 jobs:
   get_version:
     runs-on: ubuntu-latest
