@@ -87,8 +87,8 @@ jobs:
       - name: Получить версию из тега
         id: get_tag
         run: |
-          TAG=${{ github.ref }}
-          VERSION=${TAG#refs/tags/v}
+          $TAG = "${{ github.ref }}"
+          $VERSION = $TAG -replace 'refs/tags/v', ''
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Создать релиз и загрузить артефакт
