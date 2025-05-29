@@ -22,13 +22,13 @@ jobs:
       - name: Извлечь версию из setup.py
         id: get_version
         run: |
-          version=$(python3 -c "import re; exec(open('setup.py').read()); print(version)")
+          # Ищем строку вида version="1.2.3" и извлекаем номер версии
+          version=$(grep -E '^version=' setup.py | cut -d '"' -f2)
           echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Показать версию
         run: |
           echo "Извлечённая версия: '${{ steps.get_version.outputs.version }}'"
-
   # build:
   #   needs: get_version
   #   runs-on: windows-latest
