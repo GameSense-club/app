@@ -1,7 +1,7 @@
 from cx_Freeze import setup, Executable
 import sys
 
-version="1.0.1.5.2"
+version="1.0.1.5.3"
 
 base = "Win32GUI" if sys.platform == "win32" else None
 icon_file = "logo.ico"

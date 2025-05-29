@@ -5,7 +5,7 @@ import secrets
 import string
 
 APPDATA_DIR = os.getenv('LOCALAPPDATA')
-DIR = os.path.join(APPDATA_DIR, "Programs", "GameSense")
+DIR = os.path.join(APPDATA_DIR, "GameSense")
 FILE = os.path.join(DIR, "token.txt")
 
 def generate_random_token(length=32):
