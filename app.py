@@ -16,7 +16,7 @@ logging.basicConfig(
 
 token = create_token()
 url = "https://api.game-sense.net/pc"
-headers = {"Content-Type": "application/json"}
+headers = {"Content-Type": "application/json", "x-api-key":"pc_keys"}
 data = {"token": token}
 
 window = None  # Объявляем window глобально
