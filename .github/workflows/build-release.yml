@@ -96,9 +96,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref }}
+          tag: ${{ github.ref }}
           name: Релиз ${{ steps.get_tag.outputs.version }}
           draft: false
           prerelease: false
           artifacts: dist/GameSense-${{ steps.get_tag.outputs.version }}.msi
-          assetNames: GameSense-Installer-${{ steps.get_tag.outputs.version }}.msi
+          artifactNames: GameSense-Installer-${{ steps.get_tag.outputs.version }}.msi
+          token: ${{ secrets.GITHUB_TOKEN }}
