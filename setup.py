@@ -1,7 +1,7 @@
 from cx_Freeze import setup, Executable
 import sys
 
-version="1.0.1.3"
+version="1.0.1.4"
 
 base = "Win32GUI" if sys.platform == "win32" else None
 icon_file = "logo.ico"
@@ -14,6 +14,16 @@ msi_options = {
     "upgrade_code": "{F7A2E5C3-9D4E-4A8C-9B8D-7A1234567890}",
     "add_to_path": False,
     "initial_target_dir": r"[ProgramFilesFolder]\GameSense",
+    "data": {
+        # Добавляем запись в реестр для автозагрузки
+        "Registry": [
+            (
+                r"Software\Microsoft\Windows\CurrentVersion\Run",
+                "GameSense",  # Имя записи
+                r"[InstallPath]GameSense.exe"
+            )
+        ]
+    }
 }
 
 setup(
