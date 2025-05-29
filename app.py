@@ -6,6 +6,9 @@ from token_utils import *
 import logging
 import atexit
 from datetime import datetime, timedelta
+import add_autostart
+
+add_autostart.add_to_autostart()
 
 def edit_status():
     url = "https://api.game-sense.net/pc/status"

@@ -1,7 +1,7 @@
 from cx_Freeze import setup, Executable
 import sys
 
-version = "1.0.1.4.1"
+version="1.0.1.3.1"
 
 base = "Win32GUI" if sys.platform == "win32" else None
 icon_file = "logo.ico"
@@ -14,22 +14,12 @@ msi_options = {
     "upgrade_code": "{F7A2E5C3-9D4E-4A8C-9B8D-7A1234567890}",
     "add_to_path": False,
     "initial_target_dir": r"[ProgramFilesFolder]\GameSense",
-    "data": {
-        "Registry": [
-            (
-                r"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run",
-                "GameSense",  # Имя записи
-                r"[InstallPath]GameSense.exe",
-                1  # 1 = REG_SZ (строковый тип)
-            )
-        ]
-    }
 }
 
 setup(
     name="GameSense",
     version=version,
-    description="Приложение для клуба",
+    description="GameSense Software",
     author="falbue",
     author_email="cyansair05@gmail.com",
     options={
