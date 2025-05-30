@@ -7,20 +7,24 @@ import logging
 import atexit
 from datetime import datetime, timedelta
 import add_autostart
+import keyboard
+import win32gui
+import win32con
 
 add_autostart.add_to_autostart()
 
 APPDATA_DIR = os.getenv('LOCALAPPDATA')
 DIR = os.path.join(APPDATA_DIR, "GameSense")
 LOG_FILE = os.path.join(DIR, "app.log")
+token = create_token()
+headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}
+window = None
+ACTIVE = False
+WINDOW_SHOW = False
 
 # Создаем папку, если её нет
 os.makedirs(DIR, exist_ok=True)
 
-def edit_status():
-    url = "https://api.game-sense.net/pc/status"
-    data = {"token":token, "status":"активен"}
-    response = requests.post(url, json=data, headers=headers, timeout=5)
 
 # Настройка логирования
 logging.basicConfig(
@@ -29,16 +33,66 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-token = create_token()
-headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}
 
-window = None  # Объявляем window глобально
+def edit_status():
+    url = "https://api.game-sense.net/pc/status"
+    data = {"token":token, "status":"активен"}
+    response = requests.post(url, json=data, headers=headers, timeout=5)
+
+def set_always_on_top(hwnd):
+    win32gui.SetWindowPos(
+        hwnd,
+        win32con.HWND_TOPMOST,  # Поместить поверх всех окон
+        0, 0, 0, 0,
+        win32con.SWP_NOMOVE | win32con.SWP_NOSIZE
+    )
+
+    win32gui.SetWindowLong(
+            hwnd,
+            win32con.GWL_EXSTYLE,
+            win32gui.GetWindowLong(hwnd, win32con.GWL_EXSTYLE) | win32con.WS_EX_TOOLWINDOW
+        )
+
+
+def show_window(full=False):
+    global WINDOW_SHOW
+    if not window:
+        return
+
+    hwnd = win32gui.FindWindow(None, "GameSense")
+    if hwnd:
+        set_always_on_top(hwnd)
+        
+    screens = webview.screens
+    if not screens:
+        return
+        
+    main_screen = screens[0]
+    screen_width = main_screen.width
+    screen_height = main_screen.height
+
+    if full == False:
+        screen_width = 600
+        window.resize(screen_width, screen_height)
+    
+        if WINDOW_SHOW == False:
+            WINDOW_SHOW = True
+            window.show()
+        else:
+            WINDOW_SHOW = False
+            window.hide()
+
+    else:
+        window.resize(screen_width, screen_height)
+        window.show()
+
 
 def start_app():
     global window
     try:
         logging.info("Инициализация WebView")
         window = webview.create_window('GameSense', f'https://game-sense.net/login_pc/{token}', fullscreen=True)
+        keyboard.add_hotkey('alt+x', show_window)
         webview.start()
     except Exception as e:
         logging.error(f"Ошибка инициализации WebView: {e}", exc_info=True)
@@ -46,6 +100,7 @@ def start_app():
         sys.exit(1)
 
 def send_post():
+    global ACTIVE
     import requests
     while True:
         try:
@@ -69,12 +124,14 @@ def send_post():
                     edit_status()
                     
 
-                if window is not None:
+                if window is not None and ACTIVE == False:
+                    ACTIVE = True
                     window.hide()
                     block_keyboard.stop_block()
             else:
                 if window is not None:
-                    window.show()
+                    ACTIVE = False
+                    show_window(True)
                     block_keyboard.start_block()
 
 
