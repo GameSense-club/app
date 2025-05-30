@@ -1,7 +1,17 @@
 from cx_Freeze import setup, Executable
 import sys
+import re
 
-version="1.0.1.6.1"
+def get_version_from_file(file_path: str, version_var: str = "VERSION"):
+    with open(file_path, "r", encoding="utf-8") as f:
+        content = f.read()
+    pattern = rf"^{version_var}\s*=\s*['\"](.*?)['\"]|{version_var}\s*=\s*([\d.]+)"
+    match = re.search(pattern, content, re.MULTILINE)
+    if match:
+        return match.group(1) or match.group(2)
+    return None
+
+version = get_version_from_file("app.py")
 
 base = "Win32GUI" if sys.platform == "win32" else None
 icon_file = "logo.ico"

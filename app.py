@@ -1,3 +1,5 @@
+VERSION = "1.0.1.7"
+
 import webview
 import sys
 import threading
@@ -10,6 +12,7 @@ import add_autostart
 import keyboard
 import win32gui
 import win32con
+from update import *
 
 add_autostart.add_to_autostart()
 
@@ -113,6 +116,9 @@ def show_window(full=False):
 
 def start_app():
     global window
+    version = check_for_updates(VERSION)
+    if version:
+        download_and_install_update(version)
     try:
         logging.info("Инициализация WebView")
         window = webview.create_window('GameSense', f'https://game-sense.net/login_pc/{token}', fullscreen=True)
@@ -151,12 +157,12 @@ def send_post():
                 if window is not None and ACTIVE == False:
                     ACTIVE = True
                     window.hide()
-                    # block_keyboard.stop_block()
+                    block_keyboard.stop_block()
             else:
                 if window is not None:
                     ACTIVE = False
                     show_window(True)
-                    # block_keyboard.start_block()
+                    block_keyboard.start_block()
 
 
         except requests.exceptions.RequestException as e:

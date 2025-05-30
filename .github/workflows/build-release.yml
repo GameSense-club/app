@@ -22,8 +22,8 @@ jobs:
       - name: Извлечь версию из setup.py
         id: get_version
         run: |
-          version=$(grep -E '^version=' setup.py | cut -d '"' -f2)
-          echo "version=$version" >> $GITHUB_OUTPUT
+          VERSION=$(grep -E '^VERSION=' app.py | cut -d '"' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
   build:
     needs: get_version
