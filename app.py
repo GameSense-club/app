@@ -1,4 +1,4 @@
-VERSION="1.0.1.7"
+VERSION="1.0.1.7.1"
 
 import webview
 import sys

@@ -19,7 +19,7 @@ jobs:
       - name: Получить исходный код
         uses: actions/checkout@v4
 
-      - name: Извлечь версию из setup.py
+      - name: Извлечь версию из app.py
         id: get_version
         run: |
           VERSION=$(grep -E '^VERSION=' app.py | cut -d '"' -f2)
