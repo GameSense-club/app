@@ -7,6 +7,21 @@ from packaging import version
 import logging
 import re
 
+APPDATA_DIR = os.getenv('LOCALAPPDATA')
+DIR = os.path.join(APPDATA_DIR, "GameSense")
+LOG_FILE = os.path.join(DIR, "update.log")
+
+# Создаем папку, если её нет
+os.makedirs(DIR, exist_ok=True)
+
+
+# Настройка логирования
+logging.basicConfig(
+    filename=LOG_FILE,
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
 def get_latest_tag():
     try:
         # API GitHub для получения тегов
