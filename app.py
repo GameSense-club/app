@@ -12,6 +12,7 @@ import add_autostart
 import keyboard
 import win32gui
 import win32con
+import ntplib
 from update import *
 
 add_autostart.add_to_autostart()
@@ -35,6 +36,12 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
+
+def get_ntp_time():
+    ntp_client = ntplib.NTPClient()
+    response = ntp_client.request("pool.ntp.org")
+    utc_time = datetime.fromtimestamp(response.tx_time, timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    return utc_time
 
 
 def edit_status():
@@ -141,12 +148,13 @@ def send_post():
 
             if response_data["status"] == 'занят':
                 time = response_data["time_active"]
+                time_zone = int(response_data["time_zone"])
                 
                 if time:
                     time_active = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
-                    time_active += timedelta(hours=5)
-                    print(time_active)
-                    now_time = datetime.now()
+                    time_active += timedelta(hours=time_zone)
+                    now_time = get_ntp_time()
+                    now_time += timedelta(hours=time_zone)
 
                     if now_time > time_active:
                         edit_status()

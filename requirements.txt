@@ -1,5 +1,5 @@
 requests
 pywebview
 pywin32
-PyJWT
 keyboard
+ntplib
