@@ -1,4 +1,4 @@
-VERSION="1.0.1.8"
+VERSION="1.0.1.8.1"
 
 import webview
 import sys
@@ -7,7 +7,7 @@ import block_keyboard
 from token_utils import *
 import logging
 import atexit
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import add_autostart
 import keyboard
 import win32gui
@@ -154,8 +154,9 @@ def send_post():
                     time_active = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
                     time_active += timedelta(hours=time_zone)
                     now_time = get_ntp_time()
+                    now_time = datetime.strptime(now_time, "%Y-%m-%d %H:%M:%S")
                     now_time += timedelta(hours=time_zone)
-
+                    print("Время: ", time, time_active)
                     if now_time > time_active:
                         edit_status()
                 else:
