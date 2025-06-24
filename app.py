@@ -1,4 +1,4 @@
-VERSION="1.0.2"
+VERSION="1.0.2.1"
 
 import webview
 import sys
@@ -41,7 +41,7 @@ logger.info(f"Версия: {VERSION}")
 
 def get_ntp_time():
     ntp_client = ntplib.NTPClient()
-    response = ntp_client.request("time.google.com")  # или "time.windows.com", "ntp1.stratum2.ru"
+    response = ntp_client.request("ntp1.stratum2.ru")  # или "time.windows.com", "ntp1.stratum2.ru"
     utc_time = datetime.fromtimestamp(response.tx_time, timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     return utc_time
 
