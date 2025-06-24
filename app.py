@@ -1,4 +1,4 @@
-VERSION="1.0.2.1"
+VERSION="1.0.2.2"
 
 import webview
 import sys
@@ -80,8 +80,10 @@ def show_in_bar(hwnd):
     win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, new_style)
     
     # Принудительно активируем окно (если нужно)
-    win32gui.SetForegroundWindow(hwnd)
-    
+    try:
+        win32gui.SetForegroundWindow(hwnd)
+    except:
+        logger.error("Ошибка установки оверлея")
     # Обновляем окно (если изменения не применяются)
     win32gui.ShowWindow(hwnd, win32con.SW_SHOW)
     win32gui.UpdateWindow(hwnd)
