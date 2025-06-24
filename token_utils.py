@@ -1,11 +1,9 @@
 import os
 import requests
+from logging_config import logger
 
-APPDATA_DIR = os.getenv('LOCALAPPDATA')
-DIR = os.path.join(APPDATA_DIR, "GameSense")
-FILE = os.path.join(DIR, "token.txt")
-
-def create_token(file_path=FILE):
+def create_token(dir):
+    file_path = os.path.join(dir, "token.txt")
     if not os.path.exists(file_path):
         url = "https://api.game-sense.net/pc/register"
         headers = {"Content-Type": "application/json"}
@@ -14,11 +12,11 @@ def create_token(file_path=FILE):
         token = response_data["token"]
         with open(file_path, 'w') as f:
             f.write(token)
-        print(f"Создан новый токен: {token}")
+        logger.info(f"Создан новый токен: {token}")
 
     else:
         with open(file_path, 'r') as f:
             token = f.read().strip()
-        print("Используется существующий токен.")
+        logger.info("Используется существующий токен.")
 
     return token

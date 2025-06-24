@@ -1,11 +1,10 @@
-VERSION="1.0.1.8.1"
+VERSION="1.0.2"
 
 import webview
 import sys
 import threading
 import block_keyboard
 from token_utils import *
-import logging
 import atexit
 from datetime import datetime, timedelta, timezone
 import add_autostart
@@ -14,32 +13,35 @@ import win32gui
 import win32con
 import ntplib
 from update import *
+from logging_config import logger
+
+
+try: 
+    import config
+    DEBUG = config.DEBUG
+except: DEBUG = False
 
 add_autostart.add_to_autostart()
 
-APPDATA_DIR = os.getenv('LOCALAPPDATA')
-DIR = os.path.join(APPDATA_DIR, "GameSense")
-LOG_FILE = os.path.join(DIR, "app.log")
-token = create_token()
+if DEBUG == False:
+    APPDATA_DIR = os.getenv('LOCALAPPDATA')
+    DIR = os.path.join(APPDATA_DIR, "GameSense")
+else:
+    DIR = "lib"
+    
+token = create_token(DIR)
 headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}
 window = None
 ACTIVE = False
 WINDOW_SHOW = False
 
-# Создаем папку, если её нет
 os.makedirs(DIR, exist_ok=True)
 
-
-# Настройка логирования
-logging.basicConfig(
-    filename=LOG_FILE,
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+logger.info(f"Версия: {VERSION}")
 
 def get_ntp_time():
     ntp_client = ntplib.NTPClient()
-    response = ntp_client.request("pool.ntp.org")
+    response = ntp_client.request("time.google.com")  # или "time.windows.com", "ntp1.stratum2.ru"
     utc_time = datetime.fromtimestamp(response.tx_time, timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     return utc_time
 
@@ -127,13 +129,12 @@ def start_app():
     if version:
         download_and_install_update(version)
     try:
-        logging.info("Инициализация WebView")
+        logger.info("Инициализация WebView")
         window = webview.create_window('GameSense', f'https://game-sense.net/login_pc/{token}', fullscreen=True)
         keyboard.add_hotkey('alt+x', show_window)
         webview.start()
     except Exception as e:
-        logging.error(f"Ошибка инициализации WebView: {e}", exc_info=True)
-        print(f"Ошибка инициализации WebView: {e}")
+        logger.error(f"Ошибка инициализации WebView: {e}", exc_info=True)
         sys.exit(1)
 
 def send_post():
@@ -156,7 +157,6 @@ def send_post():
                     now_time = get_ntp_time()
                     now_time = datetime.strptime(now_time, "%Y-%m-%d %H:%M:%S")
                     now_time += timedelta(hours=time_zone)
-                    print("Время: ", time, time_active)
                     if now_time > time_active:
                         edit_status()
                 else:
@@ -170,23 +170,23 @@ def send_post():
             else:
                 if window is not None:
                     ACTIVE = False
-                    show_window(True)
-                    block_keyboard.start_block()
+                    if DEBUG == False:
+                        show_window(True)
+                        block_keyboard.start_block()
 
 
         except requests.exceptions.RequestException as e:
-            logging.error(f"Ошибка сети: {e}", exc_info=True)
-            print(f"Ошибка сети: {e}")
+            logger.error(f"Ошибка сети: {e}", exc_info=True)
         except KeyError:
-            logging.error("Неверный формат ответа от сервера (отсутствует 'status')")
+            logger.error("Неверный формат ответа от сервера (отсутствует 'status')")
         except Exception as e:
-            logging.error(f"Неизвестная ошибка: {e}", exc_info=True)
+            logger.error(f"Неизвестная ошибка: {e}", exc_info=True)
 
         import time
-        time.sleep(1)
+        time.sleep(5)
 
 def exit_handler():
-    logging.info("Приложение завершает работу")
+    logger.info("Приложение завершает работу")
     block_keyboard.stop_block()
 
 atexit.register(exit_handler)
