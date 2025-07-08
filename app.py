@@ -176,7 +176,7 @@ def send_post():
                     window.hide()
                     block_keyboard.stop_block()
 
-                 try:
+                try:
                     exe_path = "C:/RB/MyApp.exe"
                     subprocess.Popen(exe_path)
                 except Exception as e:
