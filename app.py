@@ -35,6 +35,7 @@ headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}
 window = None
 ACTIVE = False
 WINDOW_SHOW = False
+ROBLOX = True
 
 os.makedirs(DIR, exist_ok=True)
 
@@ -146,7 +147,7 @@ def start_app():
         sys.exit(1)
 
 def send_post():
-    global ACTIVE
+    global ACTIVE, ROBLOX
     import requests
     while True:
         try:
@@ -176,11 +177,19 @@ def send_post():
                     window.hide()
                     block_keyboard.stop_block()
 
-                try:
-                    exe_path = "C:/RB/MyApp.exe"
-                    subprocess.Popen(exe_path)
-                except Exception as e:
-                    logger.error(f"Не удалось запустить файл: {e}")
+            if response_data["status"] == 'ремонт':
+                if window is not None and ACTIVE == False:
+                    ACTIVE = True
+                    window.hide()
+                    block_keyboard.stop_block()
+
+                if ROBLOX:
+                    try:
+                        exe_path = "C:/RB/MyApp.exe"
+                        subprocess.Popen(exe_path)
+                    except Exception as e:
+                        logger.error(f"Не удалось запустить файл: {e}")
+                    ROBLOX = False
 
             else:
                 if window is not None:
