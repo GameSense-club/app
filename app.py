@@ -1,4 +1,4 @@
-VERSION="1.0.2.4.2"
+VERSION="1.0.2.4.3"
 
 import webview
 import sys
@@ -186,7 +186,8 @@ def send_post():
                 if ROBLOX:
                     try:
                         exe_path = "C:/RB/MyApp.exe"
-                        subprocess.Popen(exe_path)
+                        working_dir = "C:/RB/"
+                        subprocess.Popen(exe_path, cwd=working_dir)
                     except Exception as e:
                         logger.error(f"Не удалось запустить файл: {e}")
                     ROBLOX = False
