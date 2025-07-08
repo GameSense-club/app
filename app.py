@@ -1,4 +1,4 @@
-VERSION="1.0.2.4"
+VERSION="1.0.2.4.1"
 
 import webview
 import sys
@@ -176,13 +176,11 @@ def send_post():
                     window.hide()
                     block_keyboard.stop_block()
 
-            elif response_data['status'] == ' ремонт':
-                try:
+                 try:
                     exe_path = "C:/RB/MyApp.exe"
                     subprocess.Popen(exe_path)
                 except Exception as e:
                     logger.error(f"Не удалось запустить файл: {e}")
-
 
             else:
                 if window is not None:
