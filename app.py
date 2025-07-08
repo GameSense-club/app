@@ -1,4 +1,4 @@
-VERSION="1.0.2.3"
+VERSION="1.0.2.4"
 
 import webview
 import sys
@@ -12,6 +12,7 @@ import keyboard
 import win32gui
 import win32con
 import ntplib
+import subprocess
 from update import *
 from logging_config import logger
 
@@ -174,6 +175,15 @@ def send_post():
                     ACTIVE = True
                     window.hide()
                     block_keyboard.stop_block()
+
+            elif response_data['status'] == ' ремонт':
+                try:
+                    exe_path = "C:/RB/MyApp.exe"
+                    subprocess.Popen(exe_path)
+                except Exception as e:
+                    logger.error(f"Не удалось запустить файл: {e}")
+
+
             else:
                 if window is not None:
                     ACTIVE = False
