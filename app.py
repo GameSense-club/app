@@ -1,4 +1,4 @@
-VERSION="1.0.2.4.3"
+VERSION="1.0.2.4.4"
 
 import webview
 import sys
@@ -177,7 +177,7 @@ def send_post():
                     window.hide()
                     block_keyboard.stop_block()
 
-            if response_data["status"] == 'ремонт':
+            elif response_data["status"] == 'ремонт':
                 if window is not None and ACTIVE == False:
                     ACTIVE = True
                     window.hide()
