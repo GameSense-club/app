@@ -7,7 +7,7 @@ FILE = os.path.join(DIR, "token.txt")
 
 def create_token(file_path=FILE):
     if not os.path.exists(file_path):
-        url = "https://api.game-sense.net/pc/register"
+        url = "https://api.game-sense.ru/pc/register"
         headers = {"Content-Type": "application/json"}
         response = requests.get(url, headers=headers)
         response_data = response.json()
