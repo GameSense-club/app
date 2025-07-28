@@ -5,6 +5,7 @@ import win32con
 import win32api
 import win32gui
 import atexit
+from logging_config import logger
 
 KeyboardEvent = namedtuple('KeyboardEvent', ['event_type', 'key_code',
                                              'scan_code', 'alt_pressed',
@@ -74,14 +75,14 @@ def start_block():
     taskbar(False)
     global running
     if not running:
-        print("Блокировка клавиш запущена")
+        logger.debug("Блокировка клавиш запущена")
         listener_thread = threading.Thread(target=listen, daemon=True)
         listener_thread.start()
 
 def stop_block():
     taskbar()
     global running, hook_id
-    print("Блокировка клавиш остановлена")
+    logger.debug("Блокировка клавиш остановлена")
 
     if running:
         running = False  # Остановить цикл в функции listen

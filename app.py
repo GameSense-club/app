@@ -1,11 +1,10 @@
-VERSION="1.0.1.8.2"
+VERSION="1.0.2.4.5"
 
 import webview
 import sys
 import threading
 import block_keyboard
 from token_utils import *
-import logging
 import atexit
 from datetime import datetime, timedelta, timezone
 import add_autostart
@@ -13,33 +12,43 @@ import keyboard
 import win32gui
 import win32con
 import ntplib
+import subprocess
 from update import *
+from logging_config import logger
+
+
+try: 
+    import config
+    DEBUG = config.DEBUG
+except: DEBUG = False
 
 add_autostart.add_to_autostart()
 
-APPDATA_DIR = os.getenv('LOCALAPPDATA')
-DIR = os.path.join(APPDATA_DIR, "GameSense")
-LOG_FILE = os.path.join(DIR, "app.log")
-token = create_token()
+if DEBUG == False:
+    APPDATA_DIR = os.getenv('LOCALAPPDATA')
+    DIR = os.path.join(APPDATA_DIR, "GameSense")
+else:
+    DIR = "lib"
+    
+token = create_token(DIR)
 headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}
 window = None
 ACTIVE = False
 WINDOW_SHOW = False
+ROBLOX = True
 
-# Создаем папку, если её нет
 os.makedirs(DIR, exist_ok=True)
 
-
-# Настройка логирования
-logging.basicConfig(
-    filename=LOG_FILE,
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+logger.info(f"Версия: {VERSION}")
 
 def get_ntp_time():
     ntp_client = ntplib.NTPClient()
-    response = ntp_client.request("pool.ntp.org")
+    check_time = False
+    while check_time == False:
+        try:
+            response = ntp_client.request("ntp1.stratum2.ru")  # или "time.windows.com", "ntp1.stratum2.ru"
+            check_time = True
+        except: pass
     utc_time = datetime.fromtimestamp(response.tx_time, timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     return utc_time
 
@@ -78,8 +87,10 @@ def show_in_bar(hwnd):
     win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, new_style)
     
     # Принудительно активируем окно (если нужно)
-    win32gui.SetForegroundWindow(hwnd)
-    
+    try:
+        win32gui.SetForegroundWindow(hwnd)
+    except:
+        logger.error("Ошибка установки оверлея")
     # Обновляем окно (если изменения не применяются)
     win32gui.ShowWindow(hwnd, win32con.SW_SHOW)
     win32gui.UpdateWindow(hwnd)
@@ -132,12 +143,11 @@ def start_app():
         keyboard.add_hotkey('alt+x', show_window)
         webview.start()
     except Exception as e:
-        logging.error(f"Ошибка инициализации WebView: {e}", exc_info=True)
-        print(f"Ошибка инициализации WebView: {e}")
+        logger.error(f"Ошибка инициализации WebView: {e}", exc_info=True)
         sys.exit(1)
 
 def send_post():
-    global ACTIVE
+    global ACTIVE, ROBLOX
     import requests
     while True:
         try:
@@ -156,7 +166,6 @@ def send_post():
                     now_time = get_ntp_time()
                     now_time = datetime.strptime(now_time, "%Y-%m-%d %H:%M:%S")
                     now_time += timedelta(hours=time_zone)
-                    print("Время: ", time, time_active)
                     if now_time > time_active:
                         edit_status()
                 else:
@@ -167,26 +176,42 @@ def send_post():
                     ACTIVE = True
                     window.hide()
                     block_keyboard.stop_block()
+
+            elif response_data["status"] == 'ремонт':
+                if window is not None and ACTIVE == False:
+                    ACTIVE = True
+                    window.hide()
+                    block_keyboard.stop_block()
+
+                if ROBLOX:
+                    try:
+                        exe_path = "C:/RB/MyApp.exe"
+                        working_dir = "C:/RB/"
+                        subprocess.Popen(exe_path, cwd=working_dir)
+                    except Exception as e:
+                        logger.error(f"Не удалось запустить файл: {e}")
+                    ROBLOX = False
+
             else:
                 if window is not None:
                     ACTIVE = False
-                    show_window(True)
-                    block_keyboard.start_block()
+                    if DEBUG == False:
+                        show_window(True)
+                        block_keyboard.start_block()
 
 
         except requests.exceptions.RequestException as e:
-            logging.error(f"Ошибка сети: {e}", exc_info=True)
-            print(f"Ошибка сети: {e}")
+            logger.error(f"Ошибка сети: {e}", exc_info=True)
         except KeyError:
-            logging.error("Неверный формат ответа от сервера (отсутствует 'status')")
+            logger.error("Неверный формат ответа от сервера (отсутствует 'status')")
         except Exception as e:
-            logging.error(f"Неизвестная ошибка: {e}", exc_info=True)
+            logger.error(f"Неизвестная ошибка: {e}", exc_info=True)
 
         import time
-        time.sleep(1)
+        time.sleep(5)
 
 def exit_handler():
-    logging.info("Приложение завершает работу")
+    logger.info("Приложение завершает работу")
     block_keyboard.stop_block()
 
 atexit.register(exit_handler)
