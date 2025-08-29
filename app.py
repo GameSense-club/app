@@ -139,7 +139,7 @@ def start_app():
         download_and_install_update(version)
     try:
         logging.info("Инициализация WebView")
-        window = webview.create_window('GameSense', f'https://game-sense.ru/login_pc/{token}', fullscreen=True)
+        window = webview.create_window('GameSense', f'https://pc.game-sense.ru/login_pc/{token}', fullscreen=True)
         keyboard.add_hotkey('alt+x', show_window)
         webview.start()
     except Exception as e:
