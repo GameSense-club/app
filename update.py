@@ -6,6 +6,8 @@ import shutil
 from packaging import version
 import logging
 import re
+import subprocess
+import time
 
 APPDATA_DIR = os.getenv('LOCALAPPDATA')
 DIR = os.path.join(APPDATA_DIR, "GameSense")
@@ -69,8 +71,49 @@ def download_and_install_update(latest_version):
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
         
-        os.startfile(msi_path)
+        logging.info(f"Загрузка завершена: {msi_path}")
+        
+        # Автоматическая установка с флагами для тихой установки
+        cmd = [
+            'msiexec',
+            '/i',  # install
+            msi_path,
+            '/quiet',  # quiet installation
+            '/norestart',  # no restart
+            '/qn'  # no UI
+        ]
+        
+        logging.info("Начинаю автоматическую установку...")
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
+        if result.returncode == 0:
+            logging.info("Установка прошла успешно")
+            print("Установка завершена успешно!")
+        else:
+            logging.error(f"Ошибка установки: {result.stderr}")
+            print(f"Ошибка установки: {result.stderr}")
+        
+        # Удаляем временный файл
+        try:
+            os.remove(msi_path)
+            os.rmdir(temp_dir)
+        except:
+            pass
+            
         sys.exit(0)
         
     except Exception as e:
         logging.error(f"Ошибка при установке обновления: {e}")
+        print(f"Ошибка: {e}")
+
+# Пример использования
+if __name__ == "__main__":
+    # Укажите текущую версию вашей программы
+    current_version = "1.0.0"  # Замените на актуальную версию
+    
+    latest_version = check_for_updates(current_version)
+    if latest_version:
+        print(f"Найдено обновление: v{latest_version}")
+        download_and_install_update(latest_version)
+    else:
+        print("Обновлений нет")
