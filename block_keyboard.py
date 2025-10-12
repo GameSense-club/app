@@ -5,7 +5,15 @@ import win32con
 import win32api
 import win32gui
 import atexit
-from logging_config import logger
+import logger
+
+try: 
+    import config
+    DEBUG = config.DEBUG
+    logger = logger.setup(True, "KEYBOARD", "data/")
+except: 
+    DEBUG = False
+    logger = logger.setup(False, "APP", "data/")
 
 KeyboardEvent = namedtuple('KeyboardEvent', ['event_type', 'key_code',
                                              'scan_code', 'alt_pressed',
@@ -33,7 +41,6 @@ def listen():
                               lParam[2] == 32, lParam[3])
         
         if event.key_code in blocked:
-            print("Блокировка")
             return -1  # Блокировать обработку сообщения
 
         for handler in handlers:
@@ -64,7 +71,7 @@ def listen():
     running = True
     while running:
         msg = win32gui.GetMessage(None, 0, 0)
-        win32gui.TranslateMessage(ctypes.byref(msg))
+        win32gui.TranslateMessage(ctypeprps.byref(msg))
         win32gui.DispatchMessage(ctypes.byref(msg))
 
         # Проверка события для выхода
@@ -72,12 +79,14 @@ def listen():
             break
 
 def start_block():
-    taskbar(False)
     global running
-    if not running:
+    if not running and config.DEBUG != True:
+        taskbar(False)
         logger.debug("Блокировка клавиш запущена")
         listener_thread = threading.Thread(target=listen, daemon=True)
         listener_thread.start()
+    else:
+        taskbar()
 
 def stop_block():
     taskbar()

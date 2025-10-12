@@ -14,13 +14,17 @@ import win32con
 import ntplib
 import subprocess
 from update import *
-from logging_config import logger
+import logger
+import config
 
 
 try: 
     import config
     DEBUG = config.DEBUG
-except: DEBUG = False
+    logger = logger.setup(True, "APP", "data/")
+except: 
+    DEBUG = False
+    logger = logger.setup(False, "APP", "data/")
 
 add_autostart.add_to_autostart()
 
@@ -28,7 +32,7 @@ if DEBUG == False:
     APPDATA_DIR = os.getenv('LOCALAPPDATA')
     DIR = os.path.join(APPDATA_DIR, "GameSense")
 else:
-    DIR = "lib"
+    DIR = "data"
     
 token = create_token(DIR)
 headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}

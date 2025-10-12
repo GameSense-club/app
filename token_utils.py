@@ -1,6 +1,14 @@
 import os
 import requests
-from logging_config import logger
+import logger
+
+try: 
+    import config
+    DEBUG = config.DEBUG
+    logger = logger.setup(True, "KEYBOARD", "data/")
+except: 
+    DEBUG = False
+    logger = logger.setup(False, "APP", "data/")
 
 def create_token(dir):
     file_path = os.path.join(dir, "token.txt")
