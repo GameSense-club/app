@@ -28,6 +28,7 @@ except:
     DEBUG = False
     logger = logger.setup(False, "APP", "data/")
 
+logger.info(f"Версия: {VERSION}")
 autostart.autostart()
 
 if DEBUG == False:
@@ -42,11 +43,7 @@ headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}
 window = None
 ACTIVE = False
 WINDOW_SHOW = False
-ROBLOX = True
 
-os.makedirs(DIR, exist_ok=True)
-
-logger.info(f"Версия: {VERSION}")
 
 def get_ntp_time():
     ntp_client = ntplib.NTPClient()
@@ -154,7 +151,7 @@ def start_app():
         sys.exit(1)
 
 def send_post():
-    global ACTIVE, ROBLOX
+    global ACTIVE
     import requests
     while True:
         try:
@@ -189,15 +186,6 @@ def send_post():
                     ACTIVE = True
                     window.hide()
                     block_keyboard.stop_block()
-
-                if ROBLOX:
-                    try:
-                        exe_path = "C:/RB/MyApp.exe"
-                        working_dir = "C:/RB/"
-                        subprocess.Popen(exe_path, cwd=working_dir)
-                    except Exception as e:
-                        logger.error(f"Не удалось запустить файл: {e}")
-                    ROBLOX = False
 
             else:
                 if window is not None:
