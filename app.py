@@ -48,6 +48,7 @@ WINDOW_SHOW = False
 def get_ntp_time():
     return # Нужно доделать
 
+# 89951941908 Дидар
 
 def edit_status():
     url = "https://api.game-sense.ru/pc/status"
