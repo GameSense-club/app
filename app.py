@@ -1,14 +1,11 @@
-VERSION="1.0.2.4.5"
+VERSION="1.0.4"
 
 import webview
 import sys
 import threading
 import atexit
 from datetime import datetime, timedelta, timezone
-import keyboard
-import win32gui
-import win32con
-import ntplib
+
 import subprocess
 import os
 
@@ -17,6 +14,7 @@ from utils.token import *
 from utils.update import *
 from utils import autostart
 from utils import logger
+from utils.tray import *
 
 
 
@@ -24,9 +22,11 @@ try:
     import config
     DEBUG = config.DEBUG
     logger = logger.setup(True, "APP", "data/")
+    HOST = "http://127.0.0.1:5000"
 except: 
     DEBUG = False
     logger = logger.setup(False, "APP", "data/")
+    HOST = "https://pc.game-sense.ru"
 
 logger.info(f"Версия: {VERSION}")
 autostart.autostart()
@@ -46,15 +46,7 @@ WINDOW_SHOW = False
 
 
 def get_ntp_time():
-    ntp_client = ntplib.NTPClient()
-    check_time = False
-    while check_time == False:
-        try:
-            response = ntp_client.request("ntp1.stratum2.ru")  # или "time.windows.com", "ntp1.stratum2.ru"
-            check_time = True
-        except: pass
-    utc_time = datetime.fromtimestamp(response.tx_time, timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-    return utc_time
+    return # Нужно доделать
 
 
 def edit_status():
@@ -142,8 +134,8 @@ def start_app():
     if version:
         download_and_install_update(version)
     try:
-        logging.info("Инициализация WebView")
-        window = webview.create_window('GameSense', f'https://pc.game-sense.ru/login_pc/{token}', fullscreen=True)
+        logger.info("Инициализация WebView")
+        window = webview.create_window('GameSense', f'{HOST}/login_pc/{token}', fullscreen=True)
         keyboard.add_hotkey('alt+x', show_window)
         webview.start()
     except Exception as e:
