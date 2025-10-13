@@ -1,11 +1,11 @@
 import os
 import requests
-import logger
+from . import logger
 
 try: 
     import config
     DEBUG = config.DEBUG
-    logger = logger.setup(True, "KEYBOARD", "data/")
+    logger = logger.setup(True, "TOKEN", "data/")
 except: 
     DEBUG = False
     logger = logger.setup(False, "APP", "data/")
@@ -18,6 +18,7 @@ def create_token(dir):
         response = requests.get(url, headers=headers)
         response_data = response.json()
         token = response_data["token"]
+        os.makedirs(dir, exist_ok=True)
         with open(file_path, 'w') as f:
             f.write(token)
         logger.info(f"Создан новый токен: {token}")

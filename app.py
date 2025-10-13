@@ -3,19 +3,21 @@ VERSION="1.0.2.4.5"
 import webview
 import sys
 import threading
-import block_keyboard
-from token_utils import *
 import atexit
 from datetime import datetime, timedelta, timezone
-import add_autostart
 import keyboard
 import win32gui
 import win32con
 import ntplib
 import subprocess
-from update import *
-import logger
-import config
+import os
+
+from utils import block_keyboard
+from utils.token import *
+from utils.update import *
+from utils import autostart
+from utils import logger
+
 
 
 try: 
@@ -26,13 +28,14 @@ except:
     DEBUG = False
     logger = logger.setup(False, "APP", "data/")
 
-add_autostart.add_to_autostart()
+autostart.autostart()
 
 if DEBUG == False:
     APPDATA_DIR = os.getenv('LOCALAPPDATA')
     DIR = os.path.join(APPDATA_DIR, "GameSense")
 else:
-    DIR = "data"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    DIR = os.path.join(script_dir, "data")
     
 token = create_token(DIR)
 headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}
