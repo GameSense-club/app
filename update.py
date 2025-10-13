@@ -4,20 +4,16 @@ import sys
 import zipfile
 import shutil
 from packaging import version
-import logging
+import logger
 import re
 
-APPDATA_DIR = os.getenv('LOCALAPPDATA')
-DIR = os.path.join(APPDATA_DIR, "GameSense")
-LOG_FILE = os.path.join(DIR, "update.log")
-
-os.makedirs(DIR, exist_ok=True)
-
-logging.basicConfig(
-    filename=LOG_FILE,
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+try: 
+    import config
+    DEBUG = config.DEBUG
+    logger = logger.setup(True, "KEYBOARD", "data/")
+except: 
+    DEBUG = False
+    logger = logger.setup(False, "APP", "data/")
 
 def get_latest_tag():
     try:
@@ -42,7 +38,7 @@ def get_latest_tag():
         return version_tags[0]
         
     except Exception as e:
-        logging.error(f"Ошибка при получении тегов: {e}")
+        logger.error(f"Ошибка при получении тегов: {e}")
         return None
 
 def check_for_updates(current_version):
@@ -73,4 +69,4 @@ def download_and_install_update(latest_version):
         sys.exit(0)
         
     except Exception as e:
-        logging.error(f"Ошибка при установке обновления: {e}")
+        logger.error(f"Ошибка при установке обновления: {e}")
