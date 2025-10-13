@@ -40,7 +40,7 @@ def show_in_bar(hwnd):
     win32gui.ShowWindow(hwnd, win32con.SW_SHOW)
     win32gui.UpdateWindow(hwnd)
 
-def show_window(full=False):
+def show_window(full=False, window=None):
     global WINDOW_SHOW
     if not window:
         return
