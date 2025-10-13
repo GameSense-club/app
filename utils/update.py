@@ -3,14 +3,17 @@ import os
 import sys
 import zipfile
 import shutil
+import subprocess
 from packaging import version
-import logger
+from . import logger
 import re
+
+from . import autostart
 
 try: 
     import config
     DEBUG = config.DEBUG
-    logger = logger.setup(True, "KEYBOARD", "data/")
+    logger = logger.setup(True, "UPDATE", "data/")
 except: 
     DEBUG = False
     logger = logger.setup(False, "APP", "data/")
@@ -65,7 +68,45 @@ def download_and_install_update(latest_version):
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
         
-        os.startfile(msi_path)
+        # Автоматическая установка MSI с флагами для silent режима
+        # /quiet - тихая установка без интерфейса
+        # /passive - пассивная установка с прогресс-баром, но без интерактивных диалогов
+        # /norestart - не перезапускать компьютер после установки
+        # /forcerestart - принудительная перезагрузка
+        # /i - установка MSI файла
+        cmd = [
+            'msiexec',
+            '/i',
+            msi_path,
+            '/quiet',
+            '/norestart'
+        ]
+        
+        # Запуск установки
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
+        if result.returncode == 0:
+            autostart.autostart()
+            logger.info(f"Обновление успешно установлено: {latest_version}")
+        else:
+            logger.error(f"Ошибка при установке обновления: {result.stderr}")
+            # Если /quiet не работает, пробуем /passive
+            cmd_fallback = [
+                'msiexec',
+                '/i',
+                msi_path,
+                '/passive',
+                '/norestart'
+            ]
+            subprocess.run(cmd_fallback)
+        
+        # Удаление временного файла
+        try:
+            os.remove(msi_path)
+            os.rmdir(temp_dir)
+        except:
+            pass
+        
         sys.exit(0)
         
     except Exception as e:
