@@ -1,4 +1,4 @@
-VERSION="1.0.3"
+VERSION="1.0.3.1"
 
 import webview
 import sys
@@ -46,7 +46,7 @@ def get_ntp_time():
     check_time = False
     while check_time == False:
         try:
-            response = ntp_client.request("ntp1.stratum2.ru")  # или "time.windows.com", "ntp1.stratum2.ru"
+            response = ntp_client.request("ntp1.vniiftri.ru")
             check_time = True
         except: pass
     utc_time = datetime.fromtimestamp(response.tx_time, timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
