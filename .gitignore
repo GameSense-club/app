@@ -5,3 +5,5 @@ dist/
 app.log
 lib/
 config.py
+data/
+GameSense.egg-info/

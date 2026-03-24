@@ -4,3 +4,4 @@ pywin32
 keyboard
 ntplib
 packaging
+cx_Freeze

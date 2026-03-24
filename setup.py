@@ -1,6 +1,7 @@
 from cx_Freeze import setup, Executable
 import sys
 import re
+import os
 
 def get_version_from_file(file_path: str, version_var: str = "VERSION"):
     with open(file_path, "r", encoding="utf-8") as f:
@@ -13,7 +14,14 @@ def get_version_from_file(file_path: str, version_var: str = "VERSION"):
 
 version = get_version_from_file("app.py")
 
-base = "Win32GUI" if sys.platform == "win32" else None
+base = "gui" if sys.platform == "win32" else None
+
+if sys.platform == "win32":
+    temp_dir = os.path.abspath(os.path.join("build", "tmp"))
+    os.makedirs(temp_dir, exist_ok=True)
+    os.environ["TEMP"] = temp_dir
+    os.environ["TMP"] = temp_dir
+
 icon_file = "logo.ico"
 
 build_exe_options = {
