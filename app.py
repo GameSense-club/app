@@ -1,4 +1,4 @@
-VERSION="1.0.4"
+VERSION = "1.0.4.1"
 
 import webview
 import sys
@@ -23,6 +23,9 @@ try:
     DEBUG = config.DEBUG
 except Exception:
     DEBUG = False
+
+URL = "https://pc.game-sense.ru"
+API_URL = "https://api.game-sense.ru"
 
 add_autostart.add_to_autostart()
 
@@ -62,7 +65,7 @@ def get_ntp_time():
 
 
 def edit_status():
-    url = "https://api.game-sense.ru/pc/status"
+    url = f"{API_URL}/pc/status"
     data = {"token": token, "status": "активен"}
     response = requests.post(url, json=data, headers=headers, timeout=5)
 
@@ -153,7 +156,7 @@ def start_app():
     try:
         logging.info("Инициализация WebView")
         window = webview.create_window(
-            "GameSense", f"https://pc.game-sense.ru/login_pc/{token}", fullscreen=True
+            "GameSense", f"{URL}/login_pc/{token}", fullscreen=True
         )
         keyboard.add_hotkey("alt+x", show_window)
         webview.start()
@@ -168,7 +171,7 @@ def send_post():
 
     while True:
         try:
-            url = "https://api.game-sense.ru/pc"
+            url = f"{API_URL}/pc"
             response = requests.get(url, headers=headers, timeout=5)
             response.raise_for_status()  # Проверка HTTP-ошибок
             response_data = response.json()
