@@ -1,8 +1,9 @@
 import os
+
 import requests
 from logging_config import logger
 
-API_URL = "https://api.game-sense.ru"
+API_URL = "http://77.91.100.153:6001"
 
 
 def create_token(dir):

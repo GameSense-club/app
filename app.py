@@ -1,21 +1,21 @@
-VERSION="1.0.4.1"
+VERSION="1.0.4.2"
 
-import webview
+import atexit
+import subprocess
 import sys
 import threading
-import block_keyboard
-from token_utils import *
-import atexit
 from datetime import datetime, timedelta, timezone
-import add_autostart
-import keyboard
-import win32gui
-import win32con
-import ntplib
-import subprocess
-from update import *
-from logging_config import logger
 
+import add_autostart
+import block_keyboard
+import keyboard
+import ntplib
+import webview
+import win32con
+import win32gui
+from logging_config import logger
+from token_utils import *
+from update import *
 
 try:
     import config
@@ -24,8 +24,8 @@ try:
 except Exception:
     DEBUG = False
 
-URL = "https://pc.game-sense.ru"
-API_URL = "https://api.game-sense.ru"
+URL = "http://77.91.100.153:8100"
+API_URL = "http://77.91.100.153:6001"
 
 add_autostart.add_to_autostart()
 
