@@ -1,4 +1,4 @@
-VERSION="1.0.4.2"
+VERSION="1.0.4.3"
 
 import atexit
 import subprocess
@@ -24,8 +24,8 @@ try:
 except Exception:
     DEBUG = False
 
-URL = "http://77.91.100.153:8100"
-API_URL = "http://77.91.100.153:6001"
+URL = "https://pc.gamesense-club.ru/"
+API_URL = "https://api.gamesense-club.ru/"
 
 add_autostart.add_to_autostart()
 
